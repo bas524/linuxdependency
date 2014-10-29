@@ -16,9 +16,9 @@ int main(int argc, char *argv[]) {
   parser.addPositionalArgument("filename", QCoreApplication::translate("main", "file analyse."));
 
   // A boolean option with multiple names (-f, --force)
-  QCommandLineOption archOption(QStringList() << "a" << "arch",
-                                 QCoreApplication::translate("main", "Show architecture."));
-  parser.addOption(archOption);
+//  QCommandLineOption archOption(QStringList() << "a" << "arch",
+//                                 QCoreApplication::translate("main", "Show architecture."));
+//  parser.addOption(archOption);
 
   // Process the actual command line arguments given by the user
   parser.process(app);
@@ -29,10 +29,10 @@ int main(int argc, char *argv[]) {
 
   MainWindow w(fName);
 
-  if (parser.isSet(archOption)) {
-    QLdd qldd(fName, app.applicationDirPath());
-    size_t fsz = qldd.getFileSize();
-  }
+//  if (parser.isSet(archOption)) {
+//    QLdd qldd(fName, app.applicationDirPath());
+//    size_t fsz = qldd.getFileSize();
+//  }
 
   w.setWindowTitle("LinuxDependency");
 
