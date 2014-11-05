@@ -34,6 +34,12 @@ public:
   const QMOD &getOtherMod() const;
   void setOtherMod(const QMOD &otherMod);
 
+  const QString &getOwnerName() const;
+  void setOwnerName(const QString &ownerName);
+
+  const QString &getGroupName() const;
+  void setGroupName(const QString &groupName);
+
 private:
   QString _fileName;
   struct stat64 _fstat;
@@ -46,6 +52,8 @@ private:
   QMOD    _ownerMod;
   QMOD    _groupMod;
   QMOD    _otherMod;
+  QString _ownerName;
+  QString _groupName;
 };
 
 #endif // QLDD_H

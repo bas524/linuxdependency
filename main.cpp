@@ -25,7 +25,11 @@ int main(int argc, char *argv[]) {
 
   const QStringList args = parser.positionalArguments();
   // source is args.at(0), destination is args.at(1)
-  QString fName = args.at(0);
+  QString fName;
+  if (args.size() > 0) {
+    fName = args.at(0);
+  }
+
 
   MainWindow w(fName);
 

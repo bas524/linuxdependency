@@ -4,6 +4,9 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
 #include <QTreeWidgetItem>
 
 #define MAXBUFFER 512
@@ -36,6 +39,10 @@ QLdd::QLdd(const QString &fileName, const QString &lddDirPath) :
   _otherMod.write = S_IWOTH & _fstat.st_mode;
   _otherMod.execute = S_IXOTH & _fstat.st_mode;
 
+  struct passwd *pw = getpwuid(_fstat.st_uid);
+  _ownerName.append(pw->pw_name);
+  struct group  *gr = getgrgid(_fstat.st_gid);
+  _groupName.append(gr->gr_name);
 }
 
 QLdd::~QLdd() {
@@ -201,6 +208,21 @@ const QMOD &QLdd::getOtherMod() const {
 
 void QLdd::setOtherMod(const QMOD &otherMod) {
   _otherMod = otherMod;
+}
+const QString &QLdd::getOwnerName() const {
+  return _ownerName;
+}
+
+void QLdd::setOwnerName(const QString &ownerName) {
+  _ownerName = ownerName;
+}
+
+const QString &QLdd::getGroupName() const {
+  return _groupName;
+}
+
+void QLdd::setGroupName(const QString &groupName) {
+  _groupName = groupName;
 }
 
 const QString &QLdd::getAccessTime() {

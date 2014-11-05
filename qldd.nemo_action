@@ -1,0 +1,17 @@
+[Nemo Action]
+
+Name=View dependecy
+
+Comment=View library dependency of %f
+
+Exec=/usr/bin/Qldd %F
+
+Selection=s
+
+Mimetypes=application/*;
+
+Dependencies=ldd;
+
+Selection=s
+
+Icon-Name=gtk-execute
