@@ -6,6 +6,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <QTreeWidget>
+#include <QListWidget>
+
 typedef struct _QMOD {
   bool read;
   bool write;
@@ -19,6 +21,7 @@ public:
   size_t getFileSize();
   const QString &getStringFileSize();
   void fillDependency(QTreeWidget &treeWidget);
+  void fillExportTable(QListWidget &listWidget);
   QString getPathOfBinary();
   QString getBinaryName();
   const QString &getStatusTime();

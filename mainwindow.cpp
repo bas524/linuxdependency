@@ -53,6 +53,7 @@ void MainWindow::reset(const QString &fileName) {
   QTreeWidgetItem *header = ui->treeWidget->headerItem();
   header->setText(0, "Dependency");
   qldd->fillDependency(*ui->treeWidget);
+  qldd->fillExportTable(*ui->listWidgetExportTable);
 
   ui->labelName->setText("File Name   ");
   ui->lineEditFileName->setText(qldd->getBinaryName());

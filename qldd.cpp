@@ -8,6 +8,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <QTreeWidgetItem>
+#include <QListWidgetItem>
 
 #define MAXBUFFER 512
 
@@ -81,7 +82,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
   FILE *stream = popen(ss.str().c_str(), "r");
   QString buf;
   QStringList sl;
-  QString substr;
+//  QString substr;
   while (fgets(buffer, MAXBUFFER, stream) != NULL) {
     buf.clear();
     buf = QString::fromLocal8Bit(buffer).trimmed();
@@ -134,6 +135,28 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
   }
   pclose(stream);
   chdir(_lddDirPath.toStdString().c_str());
+}
+
+void QLdd::fillExportTable(QListWidget &listWidget) {
+  listWidget.clear();
+
+
+  char buffer[MAXBUFFER] = {0};
+  stringstream ss;
+  ss << "nm -D " << _fileName.toStdString() << " | grep \\ T\\ ";
+  FILE *stream = popen(ss.str().c_str(), "r");
+  QString buf;
+  QStringList sl;
+
+  while (fgets(buffer, MAXBUFFER, stream) != NULL) {
+    buf.clear();
+    buf = QString::fromLocal8Bit(buffer).trimmed();
+
+    listWidget.addItem(new QListWidgetItem(buf));
+
+    memset(&buffer, 0, sizeof(buffer));
+  }
+  pclose(stream);
 }
 
 QString QLdd::getPathOfBinary() {
