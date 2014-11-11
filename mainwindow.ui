@@ -75,7 +75,7 @@
             </property>
            </column>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout">
             <property name="topMargin">
              <number>18</number>
@@ -89,14 +89,16 @@
                <widget class="QLabel" name="labelName">
                 <property name="minimumSize">
                  <size>
-                  <width>80</width>
+                  <width>90</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="font">
                  <font>
                   <family>Helvetica Neue</family>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -108,7 +110,9 @@
                <widget class="QLineEdit" name="lineEditFileName">
                 <property name="font">
                  <font>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="readOnly">
@@ -124,14 +128,16 @@
                <widget class="QLabel" name="labelSize">
                 <property name="minimumSize">
                  <size>
-                  <width>80</width>
+                  <width>90</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="font">
                  <font>
                   <family>Helvetica Neue</family>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -143,7 +149,9 @@
                <widget class="QLineEdit" name="lineEditFileSize">
                 <property name="font">
                  <font>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="readOnly">
@@ -159,14 +167,16 @@
                <widget class="QLabel" name="labelTimeStatus">
                 <property name="minimumSize">
                  <size>
-                  <width>80</width>
+                  <width>90</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="font">
                  <font>
                   <family>Helvetica Neue</family>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -178,7 +188,9 @@
                <widget class="QLineEdit" name="lineEditTimeStatus">
                 <property name="font">
                  <font>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="readOnly">
@@ -194,14 +206,16 @@
                <widget class="QLabel" name="labelTimeAccess">
                 <property name="minimumSize">
                  <size>
-                  <width>80</width>
+                  <width>90</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="font">
                  <font>
                   <family>Helvetica Neue</family>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -213,7 +227,9 @@
                <widget class="QLineEdit" name="lineEditTimeAccess">
                 <property name="font">
                  <font>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="readOnly">
@@ -229,14 +245,16 @@
                <widget class="QLabel" name="labelTimeModify">
                 <property name="minimumSize">
                  <size>
-                  <width>80</width>
+                  <width>90</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="font">
                  <font>
                   <family>Helvetica Neue</family>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -248,7 +266,9 @@
                <widget class="QLineEdit" name="lineEditTimeModify">
                 <property name="font">
                  <font>
-                  <pointsize>13</pointsize>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="readOnly">
@@ -276,13 +296,14 @@
                 <widget class="QLabel" name="labelOwner">
                  <property name="minimumSize">
                   <size>
-                   <width>65</width>
+                   <width>75</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="font">
                   <font>
-                   <pointsize>13</pointsize>
+                   <family>Ubuntu</family>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="text">
@@ -307,13 +328,14 @@
                 <widget class="QLabel" name="labelGroup">
                  <property name="minimumSize">
                   <size>
-                   <width>65</width>
+                   <width>75</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="font">
                   <font>
-                   <pointsize>13</pointsize>
+                   <family>Ubuntu</family>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="text">
@@ -325,7 +347,8 @@
                 <widget class="QLineEdit" name="lineEditOwner">
                  <property name="font">
                   <font>
-                   <pointsize>13</pointsize>
+                   <family>Ubuntu</family>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="readOnly">
@@ -337,7 +360,8 @@
                 <widget class="QLineEdit" name="lineEditGroup">
                  <property name="font">
                   <font>
-                   <pointsize>13</pointsize>
+                   <family>Ubuntu</family>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="readOnly">
@@ -638,7 +662,7 @@
                  <property name="font">
                   <font>
                    <family>Ubuntu Mono</family>
-                   <pointsize>13</pointsize>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="readOnly">
@@ -664,7 +688,7 @@
          <widget class="QListWidget" name="listWidgetExportTable">
           <property name="font">
            <font>
-            <family>Menlo</family>
+            <family>Monospace</family>
            </font>
           </property>
          </widget>
@@ -681,7 +705,7 @@
      <x>0</x>
      <y>0</y>
      <width>725</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
