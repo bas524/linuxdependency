@@ -54,23 +54,71 @@ void MainWindow::reset(const QString &fileName) {
   header->setText(0, "Dependency");
   qldd->fillDependency(*ui->treeWidget);
   qldd->fillExportTable(*ui->listWidgetExportTable);
+#ifdef __APPLE__
+  QFont sansFont("Helvetica [Cronyx]", 12);
+  QFont monoFont("Menlo", 12);
+  ui->treeWidget->setFont(sansFont);
+  ui->listWidgetExportTable->setFont(monoFont);
+#endif
 
   ui->labelName->setText("File Name   ");
+#ifdef __APPLE__
+  ui->labelName->setFont(sansFont);
+#endif
   ui->lineEditFileName->setText(qldd->getBinaryName());
+#ifdef __APPLE__
+  ui->lineEditFileName->setFont(sansFont);
+#endif
   ui->labelSize->setText("File Size   ");
+#ifdef __APPLE__
+  ui->labelSize->setFont(sansFont);
+#endif
   ui->lineEditFileSize->setText(qldd->getStringFileSize() + "( " + QString::number(qldd->getFileSize()) + " bytes )");
+#ifdef __APPLE__
+  ui->lineEditFileSize->setFont(sansFont);
+#endif
   ui->labelTimeAccess->setText("Access Time ");
+#ifdef __APPLE__
+  ui->labelTimeAccess->setFont(sansFont);
+#endif
   ui->lineEditTimeAccess->setText(qldd->getAccessTime());
+#ifdef __APPLE__
+  ui->lineEditTimeAccess->setFont(sansFont);
+#endif
   ui->labelTimeStatus->setText("Status Time ");
+#ifdef __APPLE__
+  ui->labelTimeStatus->setFont(sansFont);
+#endif
   ui->lineEditTimeStatus->setText(qldd->getStatusTime());
+#ifdef __APPLE__
+  ui->lineEditTimeStatus->setFont(sansFont);
+#endif
   ui->labelTimeModify->setText("Modify Time ");
+#ifdef __APPLE__
+  ui->labelTimeModify->setFont(sansFont);
+#endif
   ui->lineEditTimeModify->setText(qldd->getModifyTime());
-
+#ifdef __APPLE__
+  ui->lineEditTimeModify->setFont(sansFont);
+#endif
 
   ui->lineEditOwner->setText(qldd->getOwnerName());
+#ifdef __APPLE__
+  ui->labelOwner->setFont(sansFont);
+  ui->lineEditOwner->setFont(sansFont);
+#endif
   ui->lineEditGroup->setText(qldd->getGroupName());
+#ifdef __APPLE__
+  ui->labelGroup->setFont(sansFont);
+  ui->lineEditGroup->setFont(sansFont);
+#endif
+
 
   ui->textEditInformation->setText(qldd->getInfo());
+#ifdef __APPLE__
+  ui->textEditInformation->setFont(sansFont);
+#endif
+
   QMOD owner = qldd->getOwnerMod();
   QMOD group = qldd->getGroupMod();
   QMOD other = qldd->getOtherMod();
