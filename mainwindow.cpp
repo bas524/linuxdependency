@@ -99,7 +99,12 @@ void MainWindow::open() {
 
 void MainWindow::about() {
   QMessageBox::about(this, tr("About Application"),
-                     tr("Linuxdependency shows all dependent libraries of a given executable or dynamic library on Linux. It is a GUI replacement for the ldd command."));
+#ifdef __APPLE__
+                     tr("UnixDependency shows all dependent libraries of a "
+#else
+                     tr("LinuxDependency shows all dependent libraries of a "
+#endif
+                        "given executable or dynamic library on Linux. It is a GUI replacement for the ldd, file and nm command."));
 }
 
 void MainWindow::createActions() {

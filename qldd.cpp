@@ -24,9 +24,15 @@ QLdd::QLdd(const QString &fileName, const QString &lddDirPath) :
     throw "Error stat file";
   }
   _link = S_ISLNK(_fstat.st_mode);
+#ifdef __APPLE__
+  _tmStatus = std::ctime((const time_t *)&_fstat.st_ctimespec.tv_sec);
+  _tmAccess = std::ctime((const time_t *)&_fstat.st_atimespec.tv_sec);
+  _tmModify = std::ctime((const time_t *)&_fstat.st_mtimespec.tv_sec);
+#else
   _tmStatus = std::ctime(&_fstat.st_ctim.tv_sec);
   _tmAccess = std::ctime(&_fstat.st_atim.tv_sec);
   _tmModify = std::ctime(&_fstat.st_mtim.tv_sec);
+#endif
 
   _ownerMod.read = S_IRUSR & _fstat.st_mode;
   _ownerMod.write = S_IWUSR & _fstat.st_mode;
@@ -78,10 +84,17 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
   QString path = getPathOfBinary();
 
   chdir(path.toStdString().c_str());
+#ifdef __APPLE__
+  ss << "otool -L " << _fileName.toStdString();
+#else
   ss << "ldd " << _fileName.toStdString();
+#endif
   FILE *stream = popen(ss.str().c_str(), "r");
   QString buf;
   QStringList sl;
+#ifdef __APPLE__
+  bool flag = false;
+#endif
 //  QString substr;
   while (fgets(buffer, MAXBUFFER, stream) != NULL) {
     buf.clear();
@@ -91,7 +104,11 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       sl.removeLast();
     }
     else {
+#ifdef __APPLE__
+      sl = buf.split(":");
+#else
       sl = buf.split("=>");
+#endif
     }
     int i = 0;
     foreach(QString v, sl) {
@@ -114,20 +131,37 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       i++;
     }
     item = new QTreeWidgetItem();
+#ifdef __APPLE__
+    if (!flag) {
+      flag = true;
+      item->setTextColor(0, Qt::magenta);
+      item->setText(0, sl.first());
+    }
+    else {
+      item->setText(0, "# "+sl.first());
+    }
+#else
     item->setText(0, sl.first());
+#endif
+    item->setToolTip(0, sl.first());
+
     treeWidget.addTopLevelItem(item);
     sl.removeFirst();
     QTreeWidgetItem *tmp = item;
     QColor redC("red");
     foreach(QString v, sl) {
-      if (v.contains("not found")) {
-        tmp->setTextColor(0, redC);
-        tmp->setText(0, tmp->text(0) + " " + v);
-      }
-      else {
-        QTreeWidgetItem *nitm = new QTreeWidgetItem(tmp);
-        nitm->setText(0, v);
-        tmp = nitm;
+      if (!v.trimmed().isEmpty()) {
+        if (v.contains("not found")) {
+          tmp->setTextColor(0, redC);
+          tmp->setText(0, tmp->text(0) + " " + v);
+          tmp->setToolTip(0, tmp->text(0));
+        }
+        else {
+          QTreeWidgetItem *nitm = new QTreeWidgetItem(tmp);
+          nitm->setText(0, v);
+          nitm->setToolTip(0, v);
+          tmp = nitm;
+        }
       }
     }
 
@@ -143,7 +177,12 @@ void QLdd::fillExportTable(QListWidget &listWidget) {
 
   char buffer[MAXBUFFER] = {0};
   stringstream ss;
-  ss << "nm -D " << _fileName.toStdString() << " | grep \\ T\\ ";
+#ifdef __APPLE__
+  ss << "nm -g "
+#else
+  ss << "nm -D "
+#endif
+     << _fileName.toStdString() << " | grep \\ T\\ ";
   FILE *stream = popen(ss.str().c_str(), "r");
   QString buf;
   QStringList sl;
@@ -200,7 +239,7 @@ QString QLdd::getInfo() {
   FILE *stream = popen(ss.str().c_str(), "r");
   QString buf;
   while (fgets(buffer, MAXBUFFER, stream) != NULL) {
-    buf.append(QString::fromLocal8Bit(buffer).trimmed());
+    buf.append(QString::fromLocal8Bit(buffer));
     memset(&buffer, 0, sizeof(buffer));
   }
   pclose(stream);

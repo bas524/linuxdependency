@@ -37,9 +37,11 @@ int main(int argc, char *argv[]) {
 //    QLdd qldd(fName, app.applicationDirPath());
 //    size_t fsz = qldd.getFileSize();
 //  }
-
+#ifdef __APPLE__
+  w.setWindowTitle("UnixDependency");
+#else
   w.setWindowTitle("LinuxDependency");
-
+#endif
   w.show();
 
   return app.exec();

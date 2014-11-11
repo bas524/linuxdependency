@@ -5,3 +5,4 @@ qrc_*.cpp
 *.pro.user
 /Makefile
 /Qldd
+*.qmake.stash
