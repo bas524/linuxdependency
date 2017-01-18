@@ -1,4 +1,4 @@
-# This example is contributed by Martin Enlund
+
 import os, os.path
 import urllib
 
