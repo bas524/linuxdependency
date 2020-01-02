@@ -7,8 +7,11 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
+#include <cstdlib>
 #include <QTreeWidgetItem>
 #include <QListWidgetItem>
+
+#include <cxxabi.h>
 
 #define MAXBUFFER 512
 
@@ -190,8 +193,15 @@ void QLdd::fillExportTable(QListWidget &listWidget) {
   while (fgets(buffer, MAXBUFFER, stream) != NULL) {
     buf.clear();
     buf = QString::fromLocal8Bit(buffer).trimmed();
-
-    listWidget.addItem(new QListWidgetItem(buf));
+    QStringList info = buf.split(" ");
+    QString demangled(info.at(2));
+    int status = 0;
+    char *realname = abi::__cxa_demangle(info.at(2).toStdString().c_str(), nullptr, nullptr, &status);
+    demangled = QString::fromLocal8Bit(realname);
+    ::free(realname);
+    demangled.replace(":__1:", "");
+    demangled.replace("std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string");
+    listWidget.addItem(new QListWidgetItem(info.at(0) + " " + demangled));
 
     memset(&buffer, 0, sizeof(buffer));
   }
