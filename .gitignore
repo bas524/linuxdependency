@@ -6,3 +6,5 @@ qrc_*.cpp
 /Makefile
 /Qldd
 *.qmake.stash
+/cmake-build-Debug/
+/cmake-build-Release/

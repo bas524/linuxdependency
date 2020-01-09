@@ -22,6 +22,9 @@
    <iconset>
     <normaloff>Qldd.ico</normaloff>Qldd.ico</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_6">
     <item row="0" column="0" rowspan="4" colspan="2">
@@ -691,6 +694,9 @@
             <family>Monospace</family>
            </font>
           </property>
+          <property name="sortingEnabled">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -705,7 +711,7 @@
      <x>0</x>
      <y>0</y>
      <width>725</width>
-     <height>24</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

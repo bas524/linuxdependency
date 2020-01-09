@@ -15,28 +15,17 @@ int main(int argc, char *argv[]) {
   parser.addVersionOption();
   parser.addPositionalArgument("filename", QCoreApplication::translate("main", "file analyse."));
 
-  // A boolean option with multiple names (-f, --force)
-//  QCommandLineOption archOption(QStringList() << "a" << "arch",
-//                                 QCoreApplication::translate("main", "Show architecture."));
-//  parser.addOption(archOption);
-
-  // Process the actual command line arguments given by the user
   parser.process(app);
 
   const QStringList args = parser.positionalArguments();
-  // source is args.at(0), destination is args.at(1)
+
   QString fName;
   if (args.size() > 0) {
     fName = args.at(0);
   }
 
-
   MainWindow w(fName);
 
-//  if (parser.isSet(archOption)) {
-//    QLdd qldd(fName, app.applicationDirPath());
-//    size_t fsz = qldd.getFileSize();
-//  }
 #ifdef __APPLE__
   w.setWindowTitle("UnixDependency");
 #else

@@ -12,14 +12,14 @@ class MainWindow;
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
-public:
+ public:
   explicit MainWindow(const QString &fileName, QWidget *parent = 0);
   ~MainWindow();
-private slots:
+ private slots:
   void open();
   void about();
 
-private:
+ private:
   void createActions();
   void createMenus();
   void reset(const QString &fileName);
@@ -34,4 +34,4 @@ private:
   QAction *exitAct;
 };
 
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H

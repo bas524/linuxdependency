@@ -7,17 +7,17 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
+#include <cstdlib>
 #include <QTreeWidgetItem>
 #include <QListWidgetItem>
+
+#include <cxxabi.h>
 
 #define MAXBUFFER 512
 
 using namespace std;
 
-QLdd::QLdd(const QString &fileName, const QString &lddDirPath) :
-  _fileName(fileName),
-  _link(false),
-  _lddDirPath(lddDirPath) {
+QLdd::QLdd(const QString &fileName, const QString &lddDirPath) : _fileName(fileName), _link(false), _lddDirPath(lddDirPath) {
   memset(&_fstat, 0, sizeof(_fstat));
   int rez = stat64(_fileName.toLocal8Bit().data(), &_fstat);
   if (rez) {
@@ -48,16 +48,13 @@ QLdd::QLdd(const QString &fileName, const QString &lddDirPath) :
 
   struct passwd *pw = getpwuid(_fstat.st_uid);
   _ownerName.append(pw->pw_name);
-  struct group  *gr = getgrgid(_fstat.st_gid);
+  struct group *gr = getgrgid(_fstat.st_gid);
   _groupName.append(gr->gr_name);
 }
 
-QLdd::~QLdd() {
-}
+QLdd::~QLdd() {}
 
-size_t QLdd::getFileSize() {
-  return _fstat.st_size;
-}
+size_t QLdd::getFileSize() { return _fstat.st_size; }
 
 const QString &QLdd::getStringFileSize() {
   double size = static_cast<double>(_fstat.st_size);
@@ -72,7 +69,6 @@ const QString &QLdd::getStringFileSize() {
   _fileSize.clear();
   _fileSize.append(buf);
   return _fileSize;
-
 }
 
 void QLdd::fillDependency(QTreeWidget &treeWidget) {
@@ -95,15 +91,13 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
 #ifdef __APPLE__
   bool flag = false;
 #endif
-//  QString substr;
   while (fgets(buffer, MAXBUFFER, stream) != NULL) {
     buf.clear();
     buf = QString::fromLocal8Bit(buffer).trimmed();
     if (!buf.contains("=>") && buf.contains("(0x")) {
       sl = buf.split("(");
       sl.removeLast();
-    }
-    else {
+    } else {
 #ifdef __APPLE__
       sl = buf.split(":");
 #else
@@ -111,7 +105,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
 #endif
     }
     int i = 0;
-    foreach(QString v, sl) {
+    foreach (QString v, sl) {
       if (v.contains("(0x")) {
         QStringList slTmp = v.split("(");
         if (slTmp.size() > 1) {
@@ -119,12 +113,10 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
           QString vt = slTmp.first().trimmed();
           if (!vt.isEmpty()) {
             sl.replace(i, slTmp.first());
-          }
-          else {
+          } else {
             sl.removeOne(v);
           }
-        }
-        else {
+        } else {
           sl.removeOne(v);
         }
       }
@@ -136,9 +128,8 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       flag = true;
       item->setTextColor(0, Qt::magenta);
       item->setText(0, sl.first());
-    }
-    else {
-      item->setText(0, "# "+sl.first());
+    } else {
+      item->setText(0, "# " + sl.first());
     }
 #else
     item->setText(0, sl.first());
@@ -149,14 +140,13 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
     sl.removeFirst();
     QTreeWidgetItem *tmp = item;
     QColor redC("red");
-    foreach(QString v, sl) {
+    foreach (QString v, sl) {
       if (!v.trimmed().isEmpty()) {
         if (v.contains("not found")) {
           tmp->setTextColor(0, redC);
           tmp->setText(0, tmp->text(0) + " " + v);
           tmp->setToolTip(0, tmp->text(0));
-        }
-        else {
+        } else {
           QTreeWidgetItem *nitm = new QTreeWidgetItem(tmp);
           nitm->setText(0, v);
           nitm->setToolTip(0, v);
@@ -174,7 +164,6 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
 void QLdd::fillExportTable(QListWidget &listWidget) {
   listWidget.clear();
 
-
   char buffer[MAXBUFFER] = {0};
   stringstream ss;
 #ifdef __APPLE__
@@ -190,8 +179,18 @@ void QLdd::fillExportTable(QListWidget &listWidget) {
   while (fgets(buffer, MAXBUFFER, stream) != NULL) {
     buf.clear();
     buf = QString::fromLocal8Bit(buffer).trimmed();
-
-    listWidget.addItem(new QListWidgetItem(buf));
+    QStringList info = buf.split(" ");
+    QString demangled(info.at(2));
+    int status = 0;
+    char *realname = abi::__cxa_demangle(info.at(2).toStdString().c_str(), nullptr, nullptr, &status);
+    if (realname) {
+      demangled = QString::fromLocal8Bit(realname);
+      ::free(realname);
+      demangled.replace(":__1:", "");
+      demangled.replace(":__cxx11:", "");
+      demangled.replace("std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string");
+    }
+    listWidget.addItem(new QListWidgetItem(info.at(0) + " " + demangled));
 
     memset(&buffer, 0, sizeof(buffer));
   }
@@ -224,13 +223,9 @@ QString QLdd::getBinaryName() {
   return QString::fromStdString(fullPath);
 }
 
-const QString &QLdd::getStatusTime() {
-  return _tmStatus;
-}
+const QString &QLdd::getStatusTime() { return _tmStatus; }
 
-const QString &QLdd::getModifyTime() {
-  return _tmModify;
-}
+const QString &QLdd::getModifyTime() { return _tmModify; }
 
 QString QLdd::getInfo() {
   char buffer[MAXBUFFER] = {0};
@@ -245,48 +240,24 @@ QString QLdd::getInfo() {
   pclose(stream);
   QStringList slTmp = buf.split(",");
   buf.clear();
-  foreach(QString v, slTmp) {
-    buf.append(v.trimmed()).append("\n");
-  }
+  foreach (QString v, slTmp) { buf.append(v.trimmed()).append("\n"); }
   return buf;
 }
-const QMOD &QLdd::getOwnerMod() const {
-  return _ownerMod;
-}
+const QMOD &QLdd::getOwnerMod() const { return _ownerMod; }
 
-void QLdd::setOwnerMod(const QMOD &ownerMod) {
-  _ownerMod = ownerMod;
-}
-const QMOD &QLdd::getGroupMod() const {
-  return _groupMod;
-}
+void QLdd::setOwnerMod(const QMOD &ownerMod) { _ownerMod = ownerMod; }
+const QMOD &QLdd::getGroupMod() const { return _groupMod; }
 
-void QLdd::setGroupMod(const QMOD &groupMod) {
-  _groupMod = groupMod;
-}
-const QMOD &QLdd::getOtherMod() const {
-  return _otherMod;
-}
+void QLdd::setGroupMod(const QMOD &groupMod) { _groupMod = groupMod; }
+const QMOD &QLdd::getOtherMod() const { return _otherMod; }
 
-void QLdd::setOtherMod(const QMOD &otherMod) {
-  _otherMod = otherMod;
-}
-const QString &QLdd::getOwnerName() const {
-  return _ownerName;
-}
+void QLdd::setOtherMod(const QMOD &otherMod) { _otherMod = otherMod; }
+const QString &QLdd::getOwnerName() const { return _ownerName; }
 
-void QLdd::setOwnerName(const QString &ownerName) {
-  _ownerName = ownerName;
-}
+void QLdd::setOwnerName(const QString &ownerName) { _ownerName = ownerName; }
 
-const QString &QLdd::getGroupName() const {
-  return _groupName;
-}
+const QString &QLdd::getGroupName() const { return _groupName; }
 
-void QLdd::setGroupName(const QString &groupName) {
-  _groupName = groupName;
-}
+void QLdd::setGroupName(const QString &groupName) { _groupName = groupName; }
 
-const QString &QLdd::getAccessTime() {
-  return _tmAccess;
-}
+const QString &QLdd::getAccessTime() { return _tmAccess; }

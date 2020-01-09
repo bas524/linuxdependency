@@ -12,7 +12,7 @@ TARGET = Qldd
 TEMPLATE = app
 
 macx {
-    QMAKE_MAC_SDK = macosx10.11
+    QMAKE_MAC_SDK = macosx10.15
 }
 
 SOURCES += main.cpp\
