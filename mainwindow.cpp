@@ -7,17 +7,17 @@
 #include <QShortcut>
 #include <QMessageBox>
 
-MainWindow::MainWindow(const QString &fileName, QWidget *parent) :
-  QMainWindow(parent),
-  ui(new Ui::MainWindow),
-  qldd(NULL),
-  shortcutClose(NULL),
-  fileMenu(NULL),
-  helpMenu(NULL),
-  openAct(NULL),
-  aboutAct(NULL),
-  aboutQtAct(NULL),
-  exitAct(NULL) {
+MainWindow::MainWindow(const QString &fileName, QWidget *parent)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow),
+      qldd(NULL),
+      shortcutClose(NULL),
+      fileMenu(NULL),
+      helpMenu(NULL),
+      openAct(NULL),
+      aboutAct(NULL),
+      aboutQtAct(NULL),
+      exitAct(NULL) {
   ui->setupUi(this);
 
   shortcutClose = new QShortcut(QKeySequence(Qt::Key_Escape), this);
@@ -113,7 +113,6 @@ void MainWindow::reset(const QString &fileName) {
   ui->lineEditGroup->setFont(sansFont);
 #endif
 
-
   ui->textEditInformation->setText(qldd->getInfo());
 #ifdef __APPLE__
   ui->textEditInformation->setFont(sansFont);
@@ -137,16 +136,15 @@ void MainWindow::reset(const QString &fileName) {
 }
 
 void MainWindow::open() {
-
   QString fileName = QFileDialog::getOpenFileName(this);
   if (!fileName.isEmpty()) {
     reset(fileName);
   }
-
 }
 
 void MainWindow::about() {
-  QMessageBox::about(this, tr("About Application"),
+  QMessageBox::about(this,
+                     tr("About Application"),
 #ifdef __APPLE__
                      tr("UnixDependency shows all dependent libraries of a "
 #else

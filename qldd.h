@@ -15,7 +15,7 @@ typedef struct _QMOD {
 } QMOD;
 
 class QLdd {
-public:
+ public:
   QLdd(const QString &fileName, const QString &lddDirPath);
   virtual ~QLdd();
   size_t getFileSize();
@@ -43,7 +43,7 @@ public:
   const QString &getGroupName() const;
   void setGroupName(const QString &groupName);
 
-private:
+ private:
   QString _fileName;
   struct stat64 _fstat;
   bool _link;
@@ -52,11 +52,11 @@ private:
   QString _tmModify;
   QString _lddDirPath;
   QString _fileSize;
-  QMOD    _ownerMod;
-  QMOD    _groupMod;
-  QMOD    _otherMod;
+  QMOD _ownerMod;
+  QMOD _groupMod;
+  QMOD _otherMod;
   QString _ownerName;
   QString _groupName;
 };
 
-#endif // QLDD_H
+#endif  // QLDD_H
