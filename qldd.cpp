@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <QTreeWidgetItem>
 #include <QListWidgetItem>
+#include <utility>
 
 #include <cxxabi.h>
 
@@ -17,11 +18,11 @@
 
 using namespace std;
 
-QLdd::QLdd(const QString &fileName, const QString &lddDirPath) : _fileName(fileName), _link(false), _lddDirPath(lddDirPath) {
+QLdd::QLdd(QString fileName, QString lddDirPath) : _fileName(std::move(fileName)), _link(false), _lddDirPath(std::move(lddDirPath)) {
   memset(&_fstat, 0, sizeof(_fstat));
   int rez = stat64(_fileName.toLocal8Bit().data(), &_fstat);
   if (rez) {
-    throw "Error stat file";
+    throw std::runtime_error("Error stat file");
   }
   _link = S_ISLNK(_fstat.st_mode);
 #ifdef __APPLE__
@@ -57,7 +58,7 @@ QLdd::~QLdd() {}
 size_t QLdd::getFileSize() { return _fstat.st_size; }
 
 const QString &QLdd::getStringFileSize() {
-  double size = static_cast<double>(_fstat.st_size);
+  auto size = static_cast<double>(_fstat.st_size);
   int i = 0;
   const char *units[] = {"B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
   while (size > 1024) {
@@ -73,7 +74,7 @@ const QString &QLdd::getStringFileSize() {
 
 void QLdd::fillDependency(QTreeWidget &treeWidget) {
   treeWidget.clear();
-  QTreeWidgetItem *item = NULL;
+  QTreeWidgetItem *item = nullptr;
 
   char buffer[MAXBUFFER] = {0};
   stringstream ss;
@@ -91,7 +92,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
 #ifdef __APPLE__
   bool flag = false;
 #endif
-  while (fgets(buffer, MAXBUFFER, stream) != NULL) {
+  while (fgets(buffer, MAXBUFFER, stream) != nullptr) {
     buf.clear();
     buf = QString::fromLocal8Bit(buffer).trimmed();
     if (!buf.contains("=>") && buf.contains("(0x")) {
@@ -105,7 +106,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
 #endif
     }
     int i = 0;
-    foreach (QString v, sl) {
+    for (const QString &v : sl) {
       if (v.contains("(0x")) {
         QStringList slTmp = v.split("(");
         if (slTmp.size() > 1) {
@@ -140,7 +141,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
     sl.removeFirst();
     QTreeWidgetItem *tmp = item;
     QColor redC("red");
-    foreach (QString v, sl) {
+    for (const QString &v: sl) {
       if (!v.trimmed().isEmpty()) {
         if (v.contains("not found")) {
           tmp->setTextColor(0, redC);
@@ -176,7 +177,7 @@ void QLdd::fillExportTable(QListWidget &listWidget) {
   QString buf;
   QStringList sl;
 
-  while (fgets(buffer, MAXBUFFER, stream) != NULL) {
+  while (fgets(buffer, MAXBUFFER, stream) != nullptr) {
     buf.clear();
     buf = QString::fromLocal8Bit(buffer).trimmed();
     QStringList info = buf.split(" ");
@@ -233,14 +234,14 @@ QString QLdd::getInfo() {
   ss << "file " << _fileName.toStdString();
   FILE *stream = popen(ss.str().c_str(), "r");
   QString buf;
-  while (fgets(buffer, MAXBUFFER, stream) != NULL) {
+  while (fgets(buffer, MAXBUFFER, stream) != nullptr) {
     buf.append(QString::fromLocal8Bit(buffer));
     memset(&buffer, 0, sizeof(buffer));
   }
   pclose(stream);
   QStringList slTmp = buf.split(",");
   buf.clear();
-  foreach (QString v, slTmp) { buf.append(v.trimmed()).append("\n"); }
+  for (const QString &v: slTmp) { buf.append(v.trimmed()).append("\n"); }
   return buf;
 }
 const QMOD &QLdd::getOwnerMod() const { return _ownerMod; }

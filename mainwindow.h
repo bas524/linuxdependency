@@ -19,6 +19,24 @@ class MainWindow : public QMainWindow {
   void open();
   void about();
 
+  void on_checkBoxOwnerRead_clicked(bool checked);
+
+  void on_checkBoxOwnerWrite_clicked(bool checked);
+
+  void on_checkBoxOwnerExec_clicked(bool checked);
+
+  void on_checkBoxGroupRead_clicked(bool checked);
+
+  void on_checkBoxGroupWrite_clicked(bool checked);
+
+  void on_checkBoxGroupExec_clicked(bool checked);
+
+  void on_checkBoxOtherRead_clicked(bool checked);
+
+  void on_checkBoxOtherWrite_clicked(bool checked);
+
+  void on_checkBoxOtherExec_clicked(bool checked);
+
  private:
   void createActions();
   void createMenus();

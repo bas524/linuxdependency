@@ -10,14 +10,14 @@
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      qldd(NULL),
-      shortcutClose(NULL),
-      fileMenu(NULL),
-      helpMenu(NULL),
-      openAct(NULL),
-      aboutAct(NULL),
-      aboutQtAct(NULL),
-      exitAct(NULL) {
+      qldd(nullptr),
+      shortcutClose(nullptr),
+      fileMenu(nullptr),
+      helpMenu(nullptr),
+      openAct(nullptr),
+      aboutAct(nullptr),
+      aboutQtAct(nullptr),
+      exitAct(nullptr) {
   ui->setupUi(this);
 
   shortcutClose = new QShortcut(QKeySequence(Qt::Key_Escape), this);
@@ -47,76 +47,24 @@ MainWindow::~MainWindow() {
 void MainWindow::reset(const QString &fileName) {
   if (qldd) {
     delete qldd;
-    qldd = NULL;
+    qldd = nullptr;
   }
   qldd = new QLdd(fileName, qApp->applicationDirPath());
   QTreeWidgetItem *header = ui->treeWidget->headerItem();
   header->setText(0, "Dependency");
   qldd->fillDependency(*ui->treeWidget);
   qldd->fillExportTable(*ui->listWidgetExportTable);
-#ifdef __APPLE__
-  QFont sansFont("Helvetica [Cronyx]", 12);
-  QFont monoFont("Menlo", 12);
-  ui->treeWidget->setFont(sansFont);
-  ui->listWidgetExportTable->setFont(monoFont);
-#endif
 
-  ui->labelName->setText("File Name   ");
-#ifdef __APPLE__
-  ui->labelName->setFont(sansFont);
-#endif
   ui->lineEditFileName->setText(qldd->getBinaryName());
-#ifdef __APPLE__
-  ui->lineEditFileName->setFont(sansFont);
-#endif
-  ui->labelSize->setText("File Size   ");
-#ifdef __APPLE__
-  ui->labelSize->setFont(sansFont);
-#endif
   ui->lineEditFileSize->setText(qldd->getStringFileSize() + "( " + QString::number(qldd->getFileSize()) + " bytes )");
-#ifdef __APPLE__
-  ui->lineEditFileSize->setFont(sansFont);
-#endif
-  ui->labelTimeAccess->setText("Access Time ");
-#ifdef __APPLE__
-  ui->labelTimeAccess->setFont(sansFont);
-#endif
   ui->lineEditTimeAccess->setText(qldd->getAccessTime());
-#ifdef __APPLE__
-  ui->lineEditTimeAccess->setFont(sansFont);
-#endif
-  ui->labelTimeStatus->setText("Status Time ");
-#ifdef __APPLE__
-  ui->labelTimeStatus->setFont(sansFont);
-#endif
   ui->lineEditTimeStatus->setText(qldd->getStatusTime());
-#ifdef __APPLE__
-  ui->lineEditTimeStatus->setFont(sansFont);
-#endif
-  ui->labelTimeModify->setText("Modify Time ");
-#ifdef __APPLE__
-  ui->labelTimeModify->setFont(sansFont);
-#endif
   ui->lineEditTimeModify->setText(qldd->getModifyTime());
-#ifdef __APPLE__
-  ui->lineEditTimeModify->setFont(sansFont);
-#endif
 
   ui->lineEditOwner->setText(qldd->getOwnerName());
-#ifdef __APPLE__
-  ui->labelOwner->setFont(sansFont);
-  ui->lineEditOwner->setFont(sansFont);
-#endif
   ui->lineEditGroup->setText(qldd->getGroupName());
-#ifdef __APPLE__
-  ui->labelGroup->setFont(sansFont);
-  ui->lineEditGroup->setFont(sansFont);
-#endif
 
   ui->textEditInformation->setText(qldd->getInfo());
-#ifdef __APPLE__
-  ui->textEditInformation->setFont(sansFont);
-#endif
 
   QMOD owner = qldd->getOwnerMod();
   QMOD group = qldd->getGroupMod();
@@ -183,3 +131,21 @@ void MainWindow::createMenus() {
   helpMenu->addAction(aboutAct);
   helpMenu->addAction(aboutQtAct);
 }
+
+void MainWindow::on_checkBoxOwnerRead_clicked(bool checked) { ui->checkBoxOwnerRead->setChecked(!checked); }
+
+void MainWindow::on_checkBoxOwnerWrite_clicked(bool checked) { ui->checkBoxOwnerWrite->setChecked(!checked); }
+
+void MainWindow::on_checkBoxOwnerExec_clicked(bool checked) { ui->checkBoxOwnerExec->setChecked(!checked); }
+
+void MainWindow::on_checkBoxGroupRead_clicked(bool checked) { ui->checkBoxGroupRead->setChecked(!checked); }
+
+void MainWindow::on_checkBoxGroupWrite_clicked(bool checked) { ui->checkBoxGroupWrite->setChecked(!checked); }
+
+void MainWindow::on_checkBoxGroupExec_clicked(bool checked) { ui->checkBoxGroupExec->setChecked(!checked); }
+
+void MainWindow::on_checkBoxOtherRead_clicked(bool checked) { ui->checkBoxOtherRead->setChecked(!checked); }
+
+void MainWindow::on_checkBoxOtherWrite_clicked(bool checked) { ui->checkBoxOtherWrite->setChecked(!checked); }
+
+void MainWindow::on_checkBoxOtherExec_clicked(bool checked) { ui->checkBoxOtherExec->setChecked(!checked); }

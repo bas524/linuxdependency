@@ -16,7 +16,7 @@ typedef struct _QMOD {
 
 class QLdd {
  public:
-  QLdd(const QString &fileName, const QString &lddDirPath);
+  QLdd(QString fileName, QString lddDirPath);
   virtual ~QLdd();
   size_t getFileSize();
   const QString &getStringFileSize();

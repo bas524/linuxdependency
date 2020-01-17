@@ -6,8 +6,8 @@
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
 
-  app.setApplicationName("Qldd");
-  app.setApplicationVersion("1.0");
+  QApplication::setApplicationName("Qldd");
+  QApplication::setApplicationVersion("1.0");
 
   QCommandLineParser parser;
   parser.setApplicationDescription("Qldd gui over ldd utility");
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
   const QStringList args = parser.positionalArguments();
 
   QString fName;
-  if (args.size() > 0) {
+  if (!args.empty()) {
     fName = args.at(0);
   }
 

@@ -72,6 +72,11 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QTreeWidget" name="treeWidget">
+           <property name="font">
+            <font>
+             <family>Menlo</family>
+            </font>
+           </property>
            <column>
             <property name="text">
              <string notr="true">1</string>
@@ -96,28 +101,13 @@
                   <height>0</height>
                  </size>
                 </property>
-                <property name="font">
-                 <font>
-                  <family>Helvetica Neue</family>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>File Name</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QLineEdit" name="lineEditFileName">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -135,28 +125,13 @@
                   <height>0</height>
                  </size>
                 </property>
-                <property name="font">
-                 <font>
-                  <family>Helvetica Neue</family>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>File Size</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QLineEdit" name="lineEditFileSize">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -174,28 +149,13 @@
                   <height>0</height>
                  </size>
                 </property>
-                <property name="font">
-                 <font>
-                  <family>Helvetica Neue</family>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>Access Time</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QLineEdit" name="lineEditTimeStatus">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -213,28 +173,13 @@
                   <height>0</height>
                  </size>
                 </property>
-                <property name="font">
-                 <font>
-                  <family>Helvetica Neue</family>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>Status Time</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QLineEdit" name="lineEditTimeAccess">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -252,28 +197,13 @@
                   <height>0</height>
                  </size>
                 </property>
-                <property name="font">
-                 <font>
-                  <family>Helvetica Neue</family>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>Modify Time</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QLineEdit" name="lineEditTimeModify">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -303,12 +233,6 @@
                    <height>0</height>
                   </size>
                  </property>
-                 <property name="font">
-                  <font>
-                   <family>Ubuntu</family>
-                   <pointsize>10</pointsize>
-                  </font>
-                 </property>
                  <property name="text">
                   <string>Owner</string>
                  </property>
@@ -335,12 +259,6 @@
                    <height>0</height>
                   </size>
                  </property>
-                 <property name="font">
-                  <font>
-                   <family>Ubuntu</family>
-                   <pointsize>10</pointsize>
-                  </font>
-                 </property>
                  <property name="text">
                   <string>Group</string>
                  </property>
@@ -348,12 +266,6 @@
                </item>
                <item row="0" column="1">
                 <widget class="QLineEdit" name="lineEditOwner">
-                 <property name="font">
-                  <font>
-                   <family>Ubuntu</family>
-                   <pointsize>10</pointsize>
-                  </font>
-                 </property>
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -361,12 +273,6 @@
                </item>
                <item row="2" column="1">
                 <widget class="QLineEdit" name="lineEditGroup">
-                 <property name="font">
-                  <font>
-                   <family>Ubuntu</family>
-                   <pointsize>10</pointsize>
-                  </font>
-                 </property>
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -662,12 +568,6 @@
                </property>
                <item row="0" column="0">
                 <widget class="QTextEdit" name="textEditInformation">
-                 <property name="font">
-                  <font>
-                   <family>Ubuntu Mono</family>
-                   <pointsize>10</pointsize>
-                  </font>
-                 </property>
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -691,7 +591,7 @@
          <widget class="QListWidget" name="listWidgetExportTable">
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Menlo</family>
            </font>
           </property>
           <property name="sortingEnabled">
@@ -711,7 +611,7 @@
      <x>0</x>
      <y>0</y>
      <width>725</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
