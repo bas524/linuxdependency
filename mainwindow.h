@@ -13,8 +13,8 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  explicit MainWindow(const QString &fileName, QWidget *parent = 0);
-  ~MainWindow();
+  explicit MainWindow(const QString &fileName, QWidget *parent = nullptr);
+  ~MainWindow() override;
  private slots:
   void open();
   void about();
