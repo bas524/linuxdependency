@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QShortcut>
 #include <QMessageBox>
+#include <QFontDatabase>
 
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
@@ -19,6 +20,11 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
       aboutQtAct(nullptr),
       exitAct(nullptr) {
   ui->setupUi(this);
+
+  QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+  QString fixedFontName = fixedFont.toString();
+
+  ui->listWidgetExportTable->setFont(fixedFont);
 
   shortcutClose = new QShortcut(QKeySequence(Qt::Key_Escape), this);
   connect(shortcutClose, SIGNAL(activated()), this, SLOT(close()));
