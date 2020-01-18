@@ -16,7 +16,7 @@ class QLdd {
  public:
   QLdd(QString fileName, QString lddDirPath);
   virtual ~QLdd();
-  uint64_t getFileSize() const;
+  int64_t getFileSize() const;
   const QString &getStringFileSize() const;
   void fillDependency(QTreeWidget &treeWidget);
   void fillExportTable(QListWidget &listWidget);

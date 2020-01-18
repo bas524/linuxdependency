@@ -72,11 +72,6 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QTreeWidget" name="treeWidget">
-           <property name="font">
-            <font>
-             <family>Menlo</family>
-            </font>
-           </property>
            <column>
             <property name="text">
              <string notr="true">1</string>
@@ -646,7 +641,7 @@
      <x>0</x>
      <y>0</y>
      <width>725</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

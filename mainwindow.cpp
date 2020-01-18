@@ -6,7 +6,12 @@
 #include <QFileDialog>
 #include <QShortcut>
 #include <QMessageBox>
-#include <QFontDatabase>
+
+#ifdef __APPLE__
+#define FIXED_FONT "Menlo"
+#else
+#define FIXED_FONT "Monospace"
+#endif
 
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
@@ -21,10 +26,12 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
       exitAct(nullptr) {
   ui->setupUi(this);
 
-  QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-  QString fixedFontName = fixedFont.toString();
+  QFont fixedFont(FIXED_FONT);
+  fixedFont.setPixelSize(ui->lineEditFileName->font().pixelSize());
+  fixedFont.setStyleHint(QFont::Monospace);
 
   ui->listWidgetExportTable->setFont(fixedFont);
+  ui->treeWidget->setFont(fixedFont);
 
   shortcutClose = new QShortcut(QKeySequence(Qt::Key_Escape), this);
   connect(shortcutClose, SIGNAL(activated()), this, SLOT(close()));

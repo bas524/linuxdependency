@@ -13,7 +13,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-add_executable(Qldd
+if (APPLE)
+  set(MACOSX_BUNDLE_BUNDLE_NAME Qldd)
+  set(BUNDLE_VAL MACOSX_BUNDLE)
+  add_executable(Qldd MACOSX_BUNDLE)
+else()
+  add_executable(Qldd)
+endif()
+
+set(SOURCES
   main.cpp
   mainwindow.cpp
   mainwindow.h
@@ -21,5 +29,5 @@ add_executable(Qldd
   qldd.cpp
   qldd.h
 )
-
+target_sources(Qldd PRIVATE ${SOURCES})
 target_link_libraries(Qldd PRIVATE Qt5::Widgets)

@@ -32,7 +32,6 @@ void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
 
   QTextStream nmOutStream(stream.get());
   QString line;
-  int status = 0;
   do {
     line = nmOutStream.readLine().trimmed();
     if (line.isNull()) {
@@ -80,7 +79,7 @@ QLdd::QLdd(QString fileName, QString lddDirPath)
 
 QLdd::~QLdd() {}
 
-uint64_t QLdd::getFileSize() const { return _fileInfo.size(); }
+int64_t QLdd::getFileSize() const { return _fileInfo.size(); }
 
 const QString &QLdd::getStringFileSize() const { return _fileSize; }
 
@@ -188,7 +187,6 @@ const QString &QLdd::getStatusTime() { return _tmStatus; }
 const QString &QLdd::getModifyTime() { return _tmModify; }
 
 QString QLdd::getInfo() {
-  char buffer[MAXBUFFER] = {0};
   std::stringstream ss;
   ss << "file " << _fileName.toStdString();
   QString buf;
