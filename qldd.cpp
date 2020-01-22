@@ -55,9 +55,9 @@ QLdd::QLdd(QString fileName, QString lddDirPath)
   _otherMod.write = _fileInfo.permission(QFile::WriteOther);
   _otherMod.execute = _fileInfo.permission(QFile::ExeOther);
 
-  _tmStatus = _fileInfo.created().toString();
-  _tmAccess = _fileInfo.lastRead().toString();
-  _tmModify = _fileInfo.lastModified().toString();
+  _tmStatus = _fileInfo.created().toString(Qt::RFC2822Date);
+  _tmAccess = _fileInfo.lastRead().toString(Qt::RFC2822Date);
+  _tmModify = _fileInfo.lastModified().toString(Qt::RFC2822Date);
 
   _link = _fileInfo.isSymLink();
 

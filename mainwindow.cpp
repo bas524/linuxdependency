@@ -27,7 +27,6 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
   ui->setupUi(this);
 
   QFont fixedFont(FIXED_FONT);
-  fixedFont.setPixelSize(ui->lineEditFileName->font().pixelSize());
   fixedFont.setStyleHint(QFont::Monospace);
 
   ui->listWidgetExportTable->setFont(fixedFont);

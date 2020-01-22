@@ -25,12 +25,7 @@ int main(int argc, char *argv[]) {
   }
 
   MainWindow w(fName);
-
-#ifdef __APPLE__
-  w.setWindowTitle("UnixDependency");
-#else
-  w.setWindowTitle("LinuxDependency");
-#endif
+  w.setWindowTitle("DependencyViewer");
   w.show();
 
   return app.exec();
