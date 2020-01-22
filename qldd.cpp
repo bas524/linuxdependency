@@ -4,60 +4,67 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
 #include <cstdlib>
 #include <QTreeWidgetItem>
 #include <QListWidgetItem>
-
+#include <QFileInfo>
+#include <QDateTime>
+#include <QTextStream>
+#include <QDir>
+#include <QProcess>
 #include <cxxabi.h>
 
 #define MAXBUFFER 512
 
-using namespace std;
-
-QLdd::QLdd(const QString &fileName, const QString &lddDirPath) : _fileName(fileName), _link(false), _lddDirPath(lddDirPath) {
-  memset(&_fstat, 0, sizeof(_fstat));
-  int rez = stat64(_fileName.toLocal8Bit().data(), &_fstat);
-  if (rez) {
-    throw "Error stat file";
-  }
-  _link = S_ISLNK(_fstat.st_mode);
 #ifdef __APPLE__
-  _tmStatus = std::ctime((const time_t *)&_fstat.st_ctimespec.tv_sec);
-  _tmAccess = std::ctime((const time_t *)&_fstat.st_atimespec.tv_sec);
-  _tmModify = std::ctime((const time_t *)&_fstat.st_mtimespec.tv_sec);
+#define CMD_LDD "otool -L"
+#define NM "nm -g"
+#define DEPEND_SPLITTER ":"
 #else
-  _tmStatus = std::ctime(&_fstat.st_ctim.tv_sec);
-  _tmAccess = std::ctime(&_fstat.st_atim.tv_sec);
-  _tmModify = std::ctime(&_fstat.st_mtim.tv_sec);
+#define CMD_LDD "ldd"
+#define NM "nm -D"
+#define DEPEND_SPLITTER "=>"
 #endif
 
-  _ownerMod.read = S_IRUSR & _fstat.st_mode;
-  _ownerMod.write = S_IWUSR & _fstat.st_mode;
-  _ownerMod.execute = S_IXUSR & _fstat.st_mode;
+template <typename Action>
+void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
+  std::unique_ptr<FILE, std::function<int(FILE *)>> stream(popen(execString.c_str(), "r"), pclose);
 
-  _groupMod.read = S_IRGRP & _fstat.st_mode;
-  _groupMod.write = S_IWGRP & _fstat.st_mode;
-  _groupMod.execute = S_IXGRP & _fstat.st_mode;
-
-  _otherMod.read = S_IROTH & _fstat.st_mode;
-  _otherMod.write = S_IWOTH & _fstat.st_mode;
-  _otherMod.execute = S_IXOTH & _fstat.st_mode;
-
-  struct passwd *pw = getpwuid(_fstat.st_uid);
-  _ownerName.append(pw->pw_name);
-  struct group *gr = getgrgid(_fstat.st_gid);
-  _groupName.append(gr->gr_name);
+  QTextStream nmOutStream(stream.get());
+  QString line;
+  do {
+    line = nmOutStream.readLine().trimmed();
+    if (line.isNull()) {
+      break;
+    }
+    action(line);
+  } while (!line.isNull());
 }
 
-QLdd::~QLdd() {}
+QLdd::QLdd(QString fileName, QString lddDirPath)
+    : _fileName(std::move(fileName)), _fileInfo(_fileName), _link(false), _lddDirPath(std::move(lddDirPath)) {
+  _ownerMod.read = _fileInfo.permission(QFile::ReadOwner);
+  _ownerMod.write = _fileInfo.permission(QFile::WriteOwner);
+  _ownerMod.execute = _fileInfo.permission(QFile::ExeOwner);
 
-size_t QLdd::getFileSize() { return _fstat.st_size; }
+  _groupMod.read = _fileInfo.permission(QFile::ReadGroup);
+  _groupMod.write = _fileInfo.permission(QFile::WriteGroup);
+  _groupMod.execute = _fileInfo.permission(QFile::ExeGroup);
 
-const QString &QLdd::getStringFileSize() {
-  double size = static_cast<double>(_fstat.st_size);
+  _otherMod.read = _fileInfo.permission(QFile::ReadOther);
+  _otherMod.write = _fileInfo.permission(QFile::WriteOther);
+  _otherMod.execute = _fileInfo.permission(QFile::ExeOther);
+
+  _tmStatus = _fileInfo.created().toString();
+  _tmAccess = _fileInfo.lastRead().toString();
+  _tmModify = _fileInfo.lastModified().toString();
+
+  _link = _fileInfo.isSymLink();
+
+  _ownerName.append(_fileInfo.owner());
+  _groupName.append(_fileInfo.group());
+
+  auto size = static_cast<double>(_fileInfo.size());
   int i = 0;
   const char *units[] = {"B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
   while (size > 1024) {
@@ -68,44 +75,35 @@ const QString &QLdd::getStringFileSize() {
   sprintf(buf, "%.*f %s", i, size, units[i]);
   _fileSize.clear();
   _fileSize.append(buf);
-  return _fileSize;
 }
+
+QLdd::~QLdd() {}
+
+int64_t QLdd::getFileSize() const { return _fileInfo.size(); }
+
+const QString &QLdd::getStringFileSize() const { return _fileSize; }
 
 void QLdd::fillDependency(QTreeWidget &treeWidget) {
   treeWidget.clear();
-  QTreeWidgetItem *item = NULL;
 
-  char buffer[MAXBUFFER] = {0};
-  stringstream ss;
-  QString path = getPathOfBinary();
+  std::stringstream ss;
 
-  chdir(path.toStdString().c_str());
-#ifdef __APPLE__
-  ss << "otool -L " << _fileName.toStdString();
-#else
-  ss << "ldd " << _fileName.toStdString();
-#endif
-  FILE *stream = popen(ss.str().c_str(), "r");
-  QString buf;
-  QStringList sl;
-#ifdef __APPLE__
+  QDir::setCurrent(getPathOfBinary());
+  ss << CMD_LDD << " " << _fileName.toStdString();
+
   bool flag = false;
-#endif
-  while (fgets(buffer, MAXBUFFER, stream) != NULL) {
-    buf.clear();
-    buf = QString::fromLocal8Bit(buffer).trimmed();
-    if (!buf.contains("=>") && buf.contains("(0x")) {
-      sl = buf.split("(");
+
+  execAndDoOnEveryLine(ss.str(), [&flag, &treeWidget](const QString &line) {
+    QTreeWidgetItem *item = nullptr;
+    QStringList sl;
+    if (!line.contains("=>") && line.contains("(0x")) {
+      sl = line.split("(");
       sl.removeLast();
     } else {
-#ifdef __APPLE__
-      sl = buf.split(":");
-#else
-      sl = buf.split("=>");
-#endif
+      sl = line.split(DEPEND_SPLITTER);
     }
     int i = 0;
-    foreach (QString v, sl) {
+    for (const QString &v : sl) {
       if (v.contains("(0x")) {
         QStringList slTmp = v.split("(");
         if (slTmp.size() > 1) {
@@ -140,48 +138,34 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
     sl.removeFirst();
     QTreeWidgetItem *tmp = item;
     QColor redC("red");
-    foreach (QString v, sl) {
+    for (const QString &v : sl) {
       if (!v.trimmed().isEmpty()) {
         if (v.contains("not found")) {
           tmp->setTextColor(0, redC);
           tmp->setText(0, tmp->text(0) + " " + v);
           tmp->setToolTip(0, tmp->text(0));
         } else {
-          QTreeWidgetItem *nitm = new QTreeWidgetItem(tmp);
+          auto *nitm = new QTreeWidgetItem(tmp);
           nitm->setText(0, v);
           nitm->setToolTip(0, v);
           tmp = nitm;
         }
       }
     }
+  });
 
-    memset(&buffer, 0, sizeof(buffer));
-  }
-  pclose(stream);
-  chdir(_lddDirPath.toStdString().c_str());
+  QDir::setCurrent(_lddDirPath);
 }
 
 void QLdd::fillExportTable(QListWidget &listWidget) {
   listWidget.clear();
+  int status = 0;
+  std::stringstream ss;
+  ss << NM << " " << _fileName.toStdString() << " | grep \\ T\\ ";
 
-  char buffer[MAXBUFFER] = {0};
-  stringstream ss;
-#ifdef __APPLE__
-  ss << "nm -g "
-#else
-  ss << "nm -D "
-#endif
-     << _fileName.toStdString() << " | grep \\ T\\ ";
-  FILE *stream = popen(ss.str().c_str(), "r");
-  QString buf;
-  QStringList sl;
-
-  while (fgets(buffer, MAXBUFFER, stream) != NULL) {
-    buf.clear();
-    buf = QString::fromLocal8Bit(buffer).trimmed();
-    QStringList info = buf.split(" ");
+  execAndDoOnEveryLine(ss.str(), [&status, &listWidget](const QString &line) {
+    QStringList info = line.split(" ");
     QString demangled(info.at(2));
-    int status = 0;
     char *realname = abi::__cxa_demangle(info.at(2).toStdString().c_str(), nullptr, nullptr, &status);
     if (realname) {
       demangled = QString::fromLocal8Bit(realname);
@@ -191,56 +175,27 @@ void QLdd::fillExportTable(QListWidget &listWidget) {
       demangled.replace("std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string");
     }
     listWidget.addItem(new QListWidgetItem(info.at(0) + " " + demangled));
-
-    memset(&buffer, 0, sizeof(buffer));
-  }
-  pclose(stream);
+  });
 }
 
-QString QLdd::getPathOfBinary() {
-  string fullPath = _fileName.toStdString();
-  size_t cwdLen = 0;
-  for (size_t i = fullPath.size(); i > 0; i--) {
-    if ((fullPath.c_str()[i] == '/') || (fullPath.c_str()[i] == '\\')) {
-      cwdLen = i;
-      fullPath = fullPath.substr(0, cwdLen);
-      break;
-    }
-  }
-  return QString::fromStdString(fullPath);
-}
+QString QLdd::getPathOfBinary() { return _fileInfo.absolutePath(); }
 
-QString QLdd::getBinaryName() {
-  string fullPath = _fileName.toStdString();
-  size_t cwdLen = 0;
-  for (size_t i = fullPath.size(); i > 0; i--) {
-    if ((fullPath.c_str()[i] == '/') || (fullPath.c_str()[i] == '\\')) {
-      cwdLen = i;
-      fullPath = fullPath.substr(cwdLen + 1, fullPath.size());
-      break;
-    }
-  }
-  return QString::fromStdString(fullPath);
-}
+QString QLdd::getBinaryName() { return _fileInfo.fileName(); }
 
 const QString &QLdd::getStatusTime() { return _tmStatus; }
 
 const QString &QLdd::getModifyTime() { return _tmModify; }
 
 QString QLdd::getInfo() {
-  char buffer[MAXBUFFER] = {0};
-  stringstream ss;
+  std::stringstream ss;
   ss << "file " << _fileName.toStdString();
-  FILE *stream = popen(ss.str().c_str(), "r");
   QString buf;
-  while (fgets(buffer, MAXBUFFER, stream) != NULL) {
-    buf.append(QString::fromLocal8Bit(buffer));
-    memset(&buffer, 0, sizeof(buffer));
-  }
-  pclose(stream);
+  execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) { buf.append(line); });
   QStringList slTmp = buf.split(",");
   buf.clear();
-  foreach (QString v, slTmp) { buf.append(v.trimmed()).append("\n"); }
+  for (const QString &v : slTmp) {
+    buf.append(v.trimmed()).append("\n");
+  }
   return buf;
 }
 const QMOD &QLdd::getOwnerMod() const { return _ownerMod; }

@@ -8,3 +8,5 @@ qrc_*.cpp
 *.qmake.stash
 /cmake-build-Debug/
 /cmake-build-Release/
+/.idea/
+/cmake-build-debug/

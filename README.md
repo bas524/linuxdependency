@@ -1,8 +1,8 @@
-LinuxDependency
+DependencyViewer
 ===============
 
-LinuxDependency (Qldd) shows all dependent libraries of a given executable or dynamic library on Linux.
-It is a GUI replacement for the ldd, file and nm commands.
+DependencyViewer (Qldd) shows all dependent libraries of a given executable or dynamic library on GNU/Linux and MacOS.
+It is a GUI replacement for the ldd (for MacOS - otool), file and nm commands.
 
 ![Dependencies](screenshot/Qldd.png?raw=true "Qldd")
 ![Dependencies](screenshot/Qldd-Export.png?raw=true "Qldd")
