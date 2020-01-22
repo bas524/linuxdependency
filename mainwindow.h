@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <qldd.h>
 #include <QShortcut>
+#include <QScopedPointer>
 
 namespace Ui {
 class MainWindow;
@@ -42,7 +43,7 @@ class MainWindow : public QMainWindow {
   void createMenus();
   void reset(const QString &fileName);
   Ui::MainWindow *ui;
-  QLdd *qldd;
+  QScopedPointer<QLdd> qldd;
   QShortcut *shortcutClose;
   QMenu *fileMenu;
   QMenu *helpMenu;

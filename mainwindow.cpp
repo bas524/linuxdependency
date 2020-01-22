@@ -46,23 +46,12 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
 
 MainWindow::~MainWindow() {
   delete ui;
-  if (qldd) {
-    delete qldd;
-  }
   delete fileMenu;
   delete helpMenu;
-  delete openAct;
-  delete aboutAct;
-  delete aboutQtAct;
-  delete exitAct;
 }
 
 void MainWindow::reset(const QString &fileName) {
-  if (qldd) {
-    delete qldd;
-    qldd = nullptr;
-  }
-  qldd = new QLdd(fileName, qApp->applicationDirPath());
+  qldd.reset(new QLdd(fileName, qApp->applicationDirPath()));
   QTreeWidgetItem *header = ui->treeWidget->headerItem();
   header->setText(0, "Dependency");
   qldd->fillDependency(*ui->treeWidget);
@@ -106,11 +95,7 @@ void MainWindow::open() {
 void MainWindow::about() {
   QMessageBox::about(this,
                      tr("About Application"),
-#ifdef __APPLE__
-                     tr("UnixDependency shows all dependent libraries of a "
-#else
-                     tr("LinuxDependency shows all dependent libraries of a "
-#endif
+                     tr("DependencyViewer shows all dependent libraries of a "
                         "given executable or dynamic library on Linux. It is a GUI replacement for the ldd, file and nm command."));
 }
 
