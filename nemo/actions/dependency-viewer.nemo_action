@@ -1,8 +1,8 @@
 [Nemo Action]
 
-Name=View dependecy
+Name=View dependencies
 
-Comment=View library dependency of %f
+Comment=View dependencies of %f
 
 Exec=/usr/bin/Qldd %F
 

@@ -10,3 +10,4 @@ qrc_*.cpp
 /cmake-build-Release/
 /.idea/
 /cmake-build-debug/
+/cmake-build-release/

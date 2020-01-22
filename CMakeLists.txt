@@ -17,17 +17,26 @@ if (APPLE)
   set(MACOSX_BUNDLE_BUNDLE_NAME Qldd)
   set(BUNDLE_VAL MACOSX_BUNDLE)
   add_executable(Qldd MACOSX_BUNDLE)
-else()
+else ()
   add_executable(Qldd)
-endif()
+endif ()
 
 set(SOURCES
-  main.cpp
-  mainwindow.cpp
-  mainwindow.h
-  mainwindow.ui
-  qldd.cpp
-  qldd.h
-)
+    main.cpp
+    mainwindow.cpp
+    mainwindow.h
+    mainwindow.ui
+    qldd.cpp
+    qldd.h
+    )
 target_sources(Qldd PRIVATE ${SOURCES})
 target_link_libraries(Qldd PRIVATE Qt5::Widgets)
+
+install(TARGETS Qldd
+        RUNTIME
+        DESTINATION bin
+        COMPONENT DependencyViewer)
+
+install(FILES ${CMAKE_SOURCE_DIR}/nemo/actions/dependency-viewer.nemo_action
+        DESTINATION share/nemo/actions
+        COMPONENT nemo-integration)
