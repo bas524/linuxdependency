@@ -33,8 +33,8 @@ target_sources(Qldd PRIVATE ${SOURCES})
 target_link_libraries(Qldd PRIVATE Qt5::Widgets)
 
 install(TARGETS Qldd
-        RUNTIME
-        DESTINATION bin
+        RUNTIME  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+        BUNDLE  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
         COMPONENT DependencyViewer)
 
 install(FILES ${CMAKE_SOURCE_DIR}/nemo/actions/dependency-viewer.nemo_action

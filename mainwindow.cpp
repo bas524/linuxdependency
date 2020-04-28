@@ -59,7 +59,7 @@ void MainWindow::reset(const QString &fileName) {
   ui->lineEditFileName->setText(qldd->getBinaryName());
   ui->lineEditFileSize->setText(qldd->getStringFileSize() + "( " + QString::number(qldd->getFileSize()) + " bytes )");
   ui->lineEditTimeAccess->setText(qldd->getAccessTime());
-  ui->lineEditTimeStatus->setText(qldd->getStatusTime());
+  ui->lineEditTimeStatus->setText(qldd->getCreatedTime());
   ui->lineEditTimeModify->setText(qldd->getModifyTime());
 
   ui->lineEditOwner->setText(qldd->getOwnerName());

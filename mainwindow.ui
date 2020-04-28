@@ -138,9 +138,9 @@
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
                  <item>
-                  <widget class="QLabel" name="labelTimeStatus">
+                  <widget class="QLabel" name="labelTimeAccess">
                    <property name="minimumSize">
                     <size>
                      <width>90</width>
@@ -148,7 +148,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Access Time</string>
+                    <string>Created Time</string>
                    </property>
                   </widget>
                  </item>
@@ -162,9 +162,9 @@
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
                  <item>
-                  <widget class="QLabel" name="labelTimeAccess">
+                  <widget class="QLabel" name="labelTimeStatus">
                    <property name="minimumSize">
                     <size>
                      <width>90</width>
@@ -172,7 +172,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Status Time</string>
+                    <string>Access Time</string>
                    </property>
                   </widget>
                  </item>
@@ -595,7 +595,7 @@
      <x>0</x>
      <y>0</y>
      <width>725</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

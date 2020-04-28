@@ -22,7 +22,7 @@ class QLdd {
   void fillExportTable(QListWidget &listWidget);
   QString getPathOfBinary();
   QString getBinaryName();
-  const QString &getStatusTime();
+  const QString &getCreatedTime();
   const QString &getAccessTime();
   const QString &getModifyTime();
   QString getInfo();
@@ -45,7 +45,7 @@ class QLdd {
   QString _fileName;
   QFileInfo _fileInfo;
   bool _link;
-  QString _tmStatus;
+  QString _tmCreate;
   QString _tmAccess;
   QString _tmModify;
   QString _lddDirPath;
