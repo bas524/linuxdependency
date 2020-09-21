@@ -16,9 +16,12 @@ class MainWindow : public QMainWindow {
  public:
   explicit MainWindow(const QString &fileName, QWidget *parent = nullptr);
   ~MainWindow() override;
+  void fillExportTable(const QString &filter);
  private slots:
   void open();
   void about();
+  void find();
+  void myClose();
 
   void on_checkBoxOwnerRead_clicked(bool checked);
 
@@ -45,6 +48,7 @@ class MainWindow : public QMainWindow {
   Ui::MainWindow *ui;
   QScopedPointer<QLdd> qldd;
   QShortcut *shortcutClose;
+  QShortcut *shortcutFind;
   QMenu *fileMenu;
   QMenu *helpMenu;
   QAction *openAct;

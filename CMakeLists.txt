@@ -28,6 +28,9 @@ set(SOURCES
     mainwindow.ui
     qldd.cpp
     qldd.h
+    finfdialog.cpp
+    finfdialog.h
+    finfdialog.ui
     )
 target_sources(Qldd PRIVATE ${SOURCES})
 target_link_libraries(Qldd PRIVATE Qt5::Widgets)

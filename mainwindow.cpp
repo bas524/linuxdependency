@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QShortcut>
 #include <QMessageBox>
+#include "finfdialog.h"
 
 #ifdef __APPLE__
 #define FIXED_FONT "Menlo"
@@ -31,7 +32,10 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
   ui->treeWidget->setFont(fixedFont);
 
   shortcutClose = new QShortcut(QKeySequence(Qt::Key_Escape), this);
-  connect(shortcutClose, SIGNAL(activated()), this, SLOT(close()));
+  connect(shortcutClose, SIGNAL(activated()), this, SLOT(myClose()));
+
+  shortcutFind = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this);
+  connect(shortcutFind, SIGNAL(activated()), this, SLOT(find()));
 
   createActions();
   createMenus();
@@ -39,6 +43,7 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
   if (!fileName.isEmpty()) {
     reset(fileName);
   }
+  ui->tabWidget->setCurrentIndex(0);
 }
 
 MainWindow::~MainWindow() {
@@ -47,12 +52,14 @@ MainWindow::~MainWindow() {
   delete helpMenu;
 }
 
+void MainWindow::fillExportTable(const QString &filter) { qldd->fillExportTable(*ui->listWidgetExportTable, filter); }
+
 void MainWindow::reset(const QString &fileName) {
   qldd.reset(new QLdd(fileName, qApp->applicationDirPath()));
   QTreeWidgetItem *header = ui->treeWidget->headerItem();
   header->setText(0, "Dependency");
   qldd->fillDependency(*ui->treeWidget);
-  qldd->fillExportTable(*ui->listWidgetExportTable, "");
+  fillExportTable("");
 
   ui->lineEditFileName->setText(qldd->getBinaryName());
   ui->lineEditFileSize->setText(qldd->getStringFileSize() + "( " + QString::number(qldd->getFileSize()) + " bytes )");
@@ -94,6 +101,19 @@ void MainWindow::about() {
                      tr("About Application"),
                      tr("DependencyViewer shows all dependent libraries of a "
                         "given executable or dynamic library on Linux. It is a GUI replacement for the ldd, file and nm command."));
+}
+
+void MainWindow::find() {
+  auto fd = new FinfDialog(this);
+  fd->show();
+}
+
+void MainWindow::myClose() {
+  if (ui->tabWidget->currentIndex() == 1) {
+    fillExportTable("");
+  } else {
+    close();
+  }
 }
 
 void MainWindow::createActions() {
