@@ -6,26 +6,34 @@
 #include <QListWidget>
 #include <QFileInfo>
 
-typedef struct _QMOD {
+struct QMOD {
   bool read;
   bool write;
   bool execute;
-} QMOD;
+};
 
 class QLdd {
  public:
+
   QLdd(QString fileName, QString lddDirPath);
   virtual ~QLdd();
+
   int64_t getFileSize() const;
   const QString &getStringFileSize() const;
+
   void fillDependency(QTreeWidget &treeWidget);
-  void fillExportTable(QListWidget &listWidget);
+
+  void fillExportTable(QListWidget &listWidget, const QString& filter);
+
   QString getPathOfBinary();
   QString getBinaryName();
+
   const QString &getCreatedTime();
   const QString &getAccessTime();
   const QString &getModifyTime();
+
   QString getInfo();
+
   const QMOD &getOwnerMod() const;
   void setOwnerMod(const QMOD &ownerMod);
 
@@ -55,6 +63,7 @@ class QLdd {
   QMOD _otherMod{};
   QString _ownerName;
   QString _groupName;
+  QString getHumanReadableDataSize() const;
 };
 
 #endif  // QLDD_H

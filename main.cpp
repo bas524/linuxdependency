@@ -1,9 +1,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QCommandLineParser>
-#include "qldd.h"
 
 int main(int argc, char *argv[]) {
+  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QApplication app(argc, argv);
 
   QApplication::setApplicationName("Qldd");

@@ -11,10 +11,7 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QDir>
-#include <QProcess>
 #include <cxxabi.h>
-
-#define MAXBUFFER 512
 
 #ifdef __APPLE__
 #define CMD_LDD "otool -L"
@@ -33,8 +30,12 @@ void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
   QTextStream nmOutStream(stream.get());
   QString line;
   do {
-    line = nmOutStream.readLine().trimmed();
+    line = nmOutStream.readLine();
     if (line.isNull()) {
+      break;
+    }
+    line = line.trimmed();
+    if (line.isEmpty()) {
       break;
     }
     action(line);
@@ -64,6 +65,9 @@ QLdd::QLdd(QString fileName, QString lddDirPath)
   _ownerName.append(_fileInfo.owner());
   _groupName.append(_fileInfo.group());
 
+  _fileSize = getHumanReadableDataSize();
+}
+QString QLdd::getHumanReadableDataSize() const {
   auto size = static_cast<double>(_fileInfo.size());
   int i = 0;
   const char *units[] = {"B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
@@ -73,11 +77,10 @@ QLdd::QLdd(QString fileName, QString lddDirPath)
   }
   char buf[512] = {0};
   sprintf(buf, "%.*f %s", i, size, units[i]);
-  _fileSize.clear();
-  _fileSize.append(buf);
+  return QString::fromLocal8Bit(buf);
 }
 
-QLdd::~QLdd() {}
+QLdd::~QLdd() = default;
 
 int64_t QLdd::getFileSize() const { return _fileInfo.size(); }
 
@@ -157,13 +160,13 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
   QDir::setCurrent(_lddDirPath);
 }
 
-void QLdd::fillExportTable(QListWidget &listWidget) {
+void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
   listWidget.clear();
   int status = 0;
   std::stringstream ss;
   ss << NM << " " << _fileName.toStdString() << " | grep \\ T\\ ";
 
-  execAndDoOnEveryLine(ss.str(), [&status, &listWidget](const QString &line) {
+  execAndDoOnEveryLine(ss.str(), [&status, &listWidget, &filter](const QString &line) {
     QStringList info = line.split(" ");
     QString demangled(info.at(2));
     char *realname = abi::__cxa_demangle(info.at(2).toStdString().c_str(), nullptr, nullptr, &status);
@@ -174,7 +177,13 @@ void QLdd::fillExportTable(QListWidget &listWidget) {
       demangled.replace(":__cxx11:", "");
       demangled.replace("std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string");
     }
-    listWidget.addItem(new QListWidgetItem(info.at(0) + " " + demangled));
+    QScopedPointer<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
+    item->setToolTip(demangled);
+    if (!filter.isEmpty() && demangled.contains(filter, Qt::CaseInsensitive)) {
+      listWidget.addItem(item.take());
+    } else if (filter.isEmpty()) {
+      listWidget.addItem(item.take());
+    }
   });
 }
 

@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QFile>
 #include <QTextStream>
-#include <iostream>
 #include <QFileDialog>
 #include <QShortcut>
 #include <QMessageBox>
@@ -54,7 +52,7 @@ void MainWindow::reset(const QString &fileName) {
   QTreeWidgetItem *header = ui->treeWidget->headerItem();
   header->setText(0, "Dependency");
   qldd->fillDependency(*ui->treeWidget);
-  qldd->fillExportTable(*ui->listWidgetExportTable);
+  qldd->fillExportTable(*ui->listWidgetExportTable, "");
 
   ui->lineEditFileName->setText(qldd->getBinaryName());
   ui->lineEditFileSize->setText(qldd->getStringFileSize() + "( " + QString::number(qldd->getFileSize()) + " bytes )");
