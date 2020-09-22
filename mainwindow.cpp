@@ -52,7 +52,11 @@ MainWindow::~MainWindow() {
   delete helpMenu;
 }
 
-void MainWindow::fillExportTable(const QString &filter) { qldd->fillExportTable(*ui->listWidgetExportTable, filter); }
+void MainWindow::fillExportTable(const QString &filter) {
+  if (qldd) {
+    qldd->fillExportTable(*ui->listWidgetExportTable, filter);
+  }
+}
 
 void MainWindow::reset(const QString &fileName) {
   qldd.reset(new QLdd(fileName, qApp->applicationDirPath()));

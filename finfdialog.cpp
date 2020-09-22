@@ -4,6 +4,7 @@
 
 FinfDialog::FinfDialog(QWidget *parent) : QDialog(parent), ui(new Ui::FinfDialog) {
   ui->setupUi(this);
+  setWindowTitle("Filter export table");
   shortcutClose = new QShortcut(QKeySequence(Qt::Key_Escape), this);
   connect(shortcutClose, SIGNAL(activated()), this, SLOT(close()));
 
