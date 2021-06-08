@@ -36,12 +36,17 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
 
   shortcutFind = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this);
   connect(shortcutFind, SIGNAL(activated()), this, SLOT(find()));
+  ui->filterButton->setIcon(ui->filterButton->style()->standardIcon(QStyle::SP_FileDialogListView));
+  ui->resetButton->setIcon(ui->resetButton->style()->standardIcon(QStyle::SP_DialogCancelButton));
 
   createActions();
   createMenus();
 
   if (!fileName.isEmpty()) {
     reset(fileName);
+  } else {
+    QTreeWidgetItem *header = ui->treeWidget->headerItem();
+    header->setText(0, "Dependency");
   }
   ui->tabWidget->setCurrentIndex(0);
 }
@@ -52,7 +57,11 @@ MainWindow::~MainWindow() {
   delete helpMenu;
 }
 
-void MainWindow::fillExportTable(const QString &filter) { qldd->fillExportTable(*ui->listWidgetExportTable, filter); }
+void MainWindow::fillExportTable(const QString &filter) {
+  if (qldd) {
+    qldd->fillExportTable(*ui->listWidgetExportTable, filter);
+  }
+}
 
 void MainWindow::reset(const QString &fileName) {
   qldd.reset(new QLdd(fileName, qApp->applicationDirPath()));
@@ -164,3 +173,7 @@ void MainWindow::on_checkBoxOtherRead_clicked(bool checked) { ui->checkBoxOtherR
 void MainWindow::on_checkBoxOtherWrite_clicked(bool checked) { ui->checkBoxOtherWrite->setChecked(!checked); }
 
 void MainWindow::on_checkBoxOtherExec_clicked(bool checked) { ui->checkBoxOtherExec->setChecked(!checked); }
+
+void MainWindow::on_filterButton_clicked() { find(); }
+
+void MainWindow::on_resetButton_clicked() { myClose(); }

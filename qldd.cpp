@@ -94,9 +94,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
   QDir::setCurrent(getPathOfBinary());
   ss << CMD_LDD << " " << _fileName.toStdString();
 
-  bool flag = false;
-
-  execAndDoOnEveryLine(ss.str(), [&flag, &treeWidget](const QString &line) {
+  execAndDoOnEveryLine(ss.str(), [this, &treeWidget](const QString &line) {
     QTreeWidgetItem *item = nullptr;
     QStringList sl;
     if (!line.contains("=>") && line.contains("(0x")) {
@@ -106,8 +104,8 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       sl = line.split(DEPEND_SPLITTER);
     }
     int i = 0;
-    for (const QString &v : sl) {
-      if (v.contains("(0x")) {
+    for (const QString &v : qAsConst(sl)) {
+      if (v.contains("(0x") || v.contains("(compatibility")) {
         QStringList slTmp = v.split("(");
         if (slTmp.size() > 1) {
           slTmp.removeLast();
@@ -123,35 +121,31 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       }
       i++;
     }
-    item = new QTreeWidgetItem();
-#ifdef __APPLE__
-    if (!flag) {
-      flag = true;
-      item->setTextColor(0, Qt::magenta);
-      item->setText(0, sl.first());
-    } else {
-      item->setText(0, "# " + sl.first());
+    if (sl.size() == 1) {
+      QFileInfo qfinf(sl.first());
+      sl.push_front(qfinf.fileName());
     }
-#else
-    item->setText(0, sl.first());
-#endif
-    item->setToolTip(0, sl.first());
+    if (sl.first() != _fileName) {
+      item = new QTreeWidgetItem();
+      item->setText(0, sl.first());
+      item->setToolTip(0, sl.first());
 
-    treeWidget.addTopLevelItem(item);
-    sl.removeFirst();
-    QTreeWidgetItem *tmp = item;
-    QColor redC("red");
-    for (const QString &v : sl) {
-      if (!v.trimmed().isEmpty()) {
-        if (v.contains("not found")) {
-          tmp->setTextColor(0, redC);
-          tmp->setText(0, tmp->text(0) + " " + v);
-          tmp->setToolTip(0, tmp->text(0));
-        } else {
-          auto *nitm = new QTreeWidgetItem(tmp);
-          nitm->setText(0, v);
-          nitm->setToolTip(0, v);
-          tmp = nitm;
+      treeWidget.addTopLevelItem(item);
+      sl.removeFirst();
+      QTreeWidgetItem *tmp = item;
+      QColor redC("red");
+      for (const QString &v : qAsConst(sl)) {
+        if (!v.trimmed().isEmpty()) {
+          if (v.contains("not found")) {
+            tmp->setTextColor(0, redC);
+            tmp->setText(0, tmp->text(0) + " " + v);
+            tmp->setToolTip(0, tmp->text(0));
+          } else {
+            auto *nitm = new QTreeWidgetItem(tmp);
+            nitm->setText(0, v);
+            nitm->setToolTip(0, v);
+            tmp = nitm;
+          }
         }
       }
     }
@@ -202,7 +196,7 @@ QString QLdd::getInfo() {
   execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) { buf.append(line); });
   QStringList slTmp = buf.split(",");
   buf.clear();
-  for (const QString &v : slTmp) {
+  for (const QString &v : qAsConst(slTmp)) {
     buf.append(v.trimmed()).append("\n");
   }
   return buf;

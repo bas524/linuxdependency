@@ -41,6 +41,10 @@ class MainWindow : public QMainWindow {
 
   void on_checkBoxOtherExec_clicked(bool checked);
 
+  void on_filterButton_clicked();
+
+  void on_resetButton_clicked();
+
  private:
   void createActions();
   void createMenus();

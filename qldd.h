@@ -14,7 +14,6 @@ struct QMOD {
 
 class QLdd {
  public:
-
   QLdd(QString fileName, QString lddDirPath);
   virtual ~QLdd();
 
@@ -23,7 +22,7 @@ class QLdd {
 
   void fillDependency(QTreeWidget &treeWidget);
 
-  void fillExportTable(QListWidget &listWidget, const QString& filter);
+  void fillExportTable(QListWidget &listWidget, const QString &filter);
 
   QString getPathOfBinary();
   QString getBinaryName();
