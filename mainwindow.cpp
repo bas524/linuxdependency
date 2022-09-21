@@ -34,7 +34,7 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
   shortcutClose = new QShortcut(QKeySequence(Qt::Key_Escape), this);
   connect(shortcutClose, SIGNAL(activated()), this, SLOT(myClose()));
 
-  shortcutFind = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this);
+  shortcutFind = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_F), this);
   connect(shortcutFind, SIGNAL(activated()), this, SLOT(find()));
 
   createActions();

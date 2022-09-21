@@ -56,7 +56,7 @@ QLdd::QLdd(QString fileName, QString lddDirPath)
   _otherMod.write = _fileInfo.permission(QFile::WriteOther);
   _otherMod.execute = _fileInfo.permission(QFile::ExeOther);
 
-  _tmCreate = _fileInfo.created().toString(Qt::RFC2822Date);
+  _tmCreate = _fileInfo.birthTime().toString(Qt::RFC2822Date);
   _tmAccess = _fileInfo.lastRead().toString(Qt::RFC2822Date);
   _tmModify = _fileInfo.lastModified().toString(Qt::RFC2822Date);
 
@@ -127,7 +127,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
 #ifdef __APPLE__
     if (!flag) {
       flag = true;
-      item->setTextColor(0, Qt::magenta);
+      item->setForeground(0, QBrush(Qt::magenta));
       item->setText(0, sl.first());
     } else {
       item->setText(0, "# " + sl.first());
@@ -144,7 +144,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
     for (const QString &v : sl) {
       if (!v.trimmed().isEmpty()) {
         if (v.contains("not found")) {
-          tmp->setTextColor(0, redC);
+          item->setForeground(0, QBrush(redC));
           tmp->setText(0, tmp->text(0) + " " + v);
           tmp->setToolTip(0, tmp->text(0));
         } else {
@@ -177,12 +177,12 @@ void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
       demangled.replace(":__cxx11:", "");
       demangled.replace("std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string");
     }
-    QScopedPointer<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
+    std::unique_ptr<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
     item->setToolTip(demangled);
     if (!filter.isEmpty() && demangled.contains(filter, Qt::CaseInsensitive)) {
-      listWidget.addItem(item.take());
+      listWidget.addItem(item.release());
     } else if (filter.isEmpty()) {
-      listWidget.addItem(item.take());
+      listWidget.addItem(item.release());
     }
   });
 }

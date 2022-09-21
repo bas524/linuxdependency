@@ -11,7 +11,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+set(Qt5_in_use true)
+find_package(Qt5 COMPONENTS Widgets QUIET)
+if (NOT Qt5_FOUND)
+  set(Qt5_in_use false)
+  find_package(Qt6 COMPONENTS Widgets REQUIRED)
+endif ()
 
 if (APPLE)
   set(MACOSX_BUNDLE_BUNDLE_NAME Qldd)
@@ -33,11 +38,14 @@ set(SOURCES
     finfdialog.ui
     )
 target_sources(Qldd PRIVATE ${SOURCES})
-target_link_libraries(Qldd PRIVATE Qt5::Widgets)
-
+if (Qt5_in_use)
+  target_link_libraries(Qldd PRIVATE Qt5::Widgets)
+else ()
+  target_link_libraries(Qldd PRIVATE Qt6::Widgets)
+endif ()
 install(TARGETS Qldd
-        RUNTIME  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-        BUNDLE  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+        BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
         COMPONENT DependencyViewer)
 
 install(FILES ${CMAKE_SOURCE_DIR}/nemo/actions/dependency-viewer.nemo_action
