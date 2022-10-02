@@ -13,11 +13,11 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(Qt5_in_use true)
-find_package(Qt5 COMPONENTS Widgets QUIET)
+set(QtVer Qt5)
+find_package(${QtVer} COMPONENTS Widgets QUIET)
 if (NOT Qt5_FOUND)
-  set(Qt5_in_use false)
-  find_package(Qt6 COMPONENTS Widgets REQUIRED)
+  set(QtVer Qt6)
+  find_package(${QtVer} COMPONENTS Widgets REQUIRED)
 endif ()
 
 if (APPLE)
@@ -39,11 +39,9 @@ set(SOURCES
     finfdialog.ui
     )
 target_sources(Qldd PRIVATE ${SOURCES})
-if (Qt5_in_use)
-  target_link_libraries(Qldd PRIVATE Qt5::Widgets)
-else ()
-  target_link_libraries(Qldd PRIVATE Qt6::Widgets)
-endif ()
+
+target_link_libraries(Qldd PRIVATE ${QtVer}::Widgets)
+
 install(TARGETS Qldd
         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
         BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
@@ -72,14 +70,16 @@ if(APPLE)
                           MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
                           MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2020 bas524@yandex.ru"
                           )
-     add_custom_command(TARGET Qldd
+    if (${QtVer} STREQUAL Qt5)
+      add_custom_command(TARGET Qldd
                         POST_BUILD
                         COMMAND plutil -replace NSHighResolutionCapable -bool true Qldd.app/Contents/Info.plist
                         )
+      endif()
 endif()
 
 set(desktop.path applications)
-set(desktop.files resources/example.desktop)
+set(desktop.files resources/qldd.desktop)
 set(icon.path icons/hicolor/64x64/apps)
 set(icon.files resources/icon64.png)
 set(iconsvg.path icons/hicolor/scalable/apps)

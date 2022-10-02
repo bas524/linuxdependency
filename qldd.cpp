@@ -137,7 +137,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       for (const QString &v : qAsConst(sl)) {
         if (!v.trimmed().isEmpty()) {
           if (v.contains("not found")) {
-            tmp->setTextColor(0, redC);
+            tmp->setForeground(0, QBrush(redC));
             tmp->setText(0, tmp->text(0) + " " + v);
             tmp->setToolTip(0, tmp->text(0));
           } else {
