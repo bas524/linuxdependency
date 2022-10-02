@@ -11,3 +11,5 @@ qrc_*.cpp
 /.idea/
 /cmake-build-debug/
 /cmake-build-release/
+/.DS_Store
+/CMakeLists.txt.user
