@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QFileInfo>
 
 int main(int argc, char *argv[]) {
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -25,7 +26,13 @@ int main(int argc, char *argv[]) {
   }
 
   MainWindow w(fName);
-  w.setWindowTitle("DependencyViewer");
+  QString title = "DependencyViewer";
+  if (!fName.isEmpty()) {
+    QFileInfo fi(fName);
+    auto s = QString(" - %1").arg(fi.fileName());
+    title.append(s);
+  }
+  w.setWindowTitle(title);
   w.show();
 
   return app.exec();

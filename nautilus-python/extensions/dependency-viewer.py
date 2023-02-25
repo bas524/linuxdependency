@@ -1,33 +1,27 @@
 import os, os.path
-import urllib
+import urllib.parse
 
-from gi.repository import Nautilus, GObject, GConf
+from gi.repository import Nautilus, GObject
 
 QLDD_KEY = '/usr/bin/Qldd'
 
-
-class OpenQlddExtension(Nautilus.MenuProvider, GObject.GObject):
+class OpenQlddExtension(GObject.GObject, Nautilus.MenuProvider):
     def __init__(self):
         pass
 
     def _open_qldd(self, file):
-        filename = urllib.unquote(file.get_uri()[7:])
+        filename = urllib.parse.unquote(file.get_uri()[7:])
         qldd = QLDD_KEY
         os.system('%s %s &' % (qldd, filename))
 
-    def menu_activate_cb(self, menu, file):
-        self._open_qldd(file)
+    def menu_activate_cb(self, menu, files):
+        for file in files:
+            self._open_qldd(file)
 
     def get_file_items(self, window, files):
-        if len(files) != 1:
-            return
-
-        file = files[0]
-        if file.is_directory() or file.get_uri_scheme() != 'file':
-            return
-
-        item = Nautilus.MenuItem(name='NautilusPython::openqldd_file_item',
-                                 label='View dependencies',
-                                 tip='View dependencies of %s' % file.get_name())
-        item.connect('activate', self.menu_activate_cb, file)
+        item = Nautilus.MenuItem(
+            name='Qldd',
+            label='View dependencies',
+            icon='/usr/share/icons/qldd/Qldd.png')
+        item.connect('activate', self.menu_activate_cb, files)
         return item,
