@@ -4,13 +4,9 @@
 #include <QFileDialog>
 #include <QShortcut>
 #include <QMessageBox>
+#include <QClipboard>
+#include <QFontDatabase>
 #include "finfdialog.h"
-
-#ifdef __APPLE__
-#define FIXED_FONT "Menlo"
-#else
-#define FIXED_FONT "Monospace"
-#endif
 
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
@@ -25,8 +21,9 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
       exitAct(nullptr) {
   ui->setupUi(this);
 
-  QFont fixedFont(FIXED_FONT);
-  fixedFont.setStyleHint(QFont::Monospace);
+  int id = QFontDatabase::addApplicationFont(":/monofont.ttf");
+  QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+  fixedFont = QFont(family);
 
   ui->listWidgetExportTable->setFont(fixedFont);
   ui->treeWidget->setFont(fixedFont);
@@ -108,8 +105,8 @@ void MainWindow::open() {
 void MainWindow::about() {
   QMessageBox::about(this,
                      tr("About Application"),
-                     tr("DependencyViewer shows all dependent libraries of a "
-                        "given executable or dynamic library on Linux. It is a GUI replacement for the ldd, file and nm command."));
+                     tr("DependencyViewer shows all dependecies of a "
+                        "given executable or dynamic library. It is a GUI wrapper for the ldd, file and nm command."));
 }
 
 void MainWindow::find() {
@@ -154,8 +151,31 @@ void MainWindow::createMenus() {
   helpMenu = menuBar()->addMenu(tr("&Help"));
   helpMenu->addAction(aboutAct);
   helpMenu->addAction(aboutQtAct);
+
+  ui->listWidgetExportTable->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(ui->listWidgetExportTable, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
+void MainWindow::showContextMenu(const QPoint &pos) {
+  // Handle global position
+  QPoint globalPos = ui->listWidgetExportTable->mapToGlobal(pos);
+  // Create menu and insert some actions
+  QMenu myMenu;
+  myMenu.addAction("Copy", this, SLOT(copyExportItem()));
+  // Show context menu at handling position
+  myMenu.exec(globalPos);
+}
+
+void MainWindow::copyExportItem() {
+  QClipboard *clipboard = qApp->clipboard();
+  // If multiple selection is on, we need to erase all selected items
+  for (int i = 0; i < ui->listWidgetExportTable->selectedItems().size(); ++i) {
+    // Get curent item on selected row
+    QListWidgetItem *item = ui->listWidgetExportTable->item(ui->listWidgetExportTable->currentRow());
+    // And copy text from it
+    clipboard->setText(item->text());
+  }
+}
 void MainWindow::on_checkBoxOwnerRead_clicked(bool checked) { ui->checkBoxOwnerRead->setChecked(!checked); }
 
 void MainWindow::on_checkBoxOwnerWrite_clicked(bool checked) { ui->checkBoxOwnerWrite->setChecked(!checked); }

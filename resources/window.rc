@@ -15,13 +15,13 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "CompanyName", "The Qt Company Ltd"
-            VALUE "FileDescription", "QtQuick Window Example"
+            VALUE "CompanyName", "bas524"
+            VALUE "FileDescription", "Dependency Viewer"
             VALUE "FileVersion", "1.0.0.0"
-            VALUE "LegalCopyright", "Copyright (C) 2015 The Qt Company Ltd."
-            VALUE "InternalName", "window"
-            VALUE "OriginalFilename", "window.exe"
-            VALUE "ProductName", "QtQuick Window Example"
+            VALUE "LegalCopyright", "Copyright (C) 2023 Apache 2.0."
+            VALUE "InternalName", "Qldd"
+            VALUE "OriginalFilename", "Qldd.exe"
+            VALUE "ProductName", "Dependency Viewer"
             VALUE "ProductVersion", "1.0.0.0"
         END
     END

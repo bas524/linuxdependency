@@ -37,6 +37,7 @@ set(SOURCES
     finfdialog.cpp
     finfdialog.h
     finfdialog.ui
+    resources/resources.qrc
     )
 target_sources(Qldd PRIVATE ${SOURCES})
 

@@ -5,6 +5,7 @@
 #include <QTreeWidget>
 #include <QListWidget>
 #include <QFileInfo>
+#include <QFont>
 
 struct QMOD {
   bool read;
