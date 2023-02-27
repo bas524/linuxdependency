@@ -21,7 +21,7 @@ if (NOT Qt5_FOUND)
 endif ()
 
 if (APPLE)
-  set(APP_ICNS "${CMAKE_SOURCE_DIR}/resources/icon.icns")
+  set(APP_ICNS "${CMAKE_SOURCE_DIR}/resources/Qldd.icns")
   add_executable(Qldd MACOSX_BUNDLE ${APP_ICNS})
 else ()
   add_executable(Qldd)
@@ -58,13 +58,13 @@ if(APPLE)
     install(TARGETS Qldd
             BUNDLE DESTINATION .
             RUNTIME DESTINATION .)
-    set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/icon.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/Qldd.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     set_target_properties(Qldd
                           PROPERTIES
                           MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
                           MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} Copyright (c) 2020 bas524@yandex.ru"
-                          MACOSX_BUNDLE_ICON_FILE icon.icns
+                          MACOSX_BUNDLE_ICON_FILE Qldd.icns
                           MACOSX_BUNDLE_GUI_IDENTIFIER "${PROJECT_NAME}"
                           MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
                           MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
@@ -82,9 +82,9 @@ endif()
 set(desktop.path applications)
 set(desktop.files resources/qldd.desktop)
 set(icon.path icons/hicolor/64x64/apps)
-set(icon.files resources/icon64.png)
+set(icon.files resources/Qldd.png)
 set(iconsvg.path icons/hicolor/scalable/apps)
-set(iconsvg.files resources/icon.svg)
+set(iconsvg.files resources/Qldd.svg)
 foreach(items IN ITEMS desktop icon iconsvg)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${${items}.files}
             DESTINATION share/${${items}.path}

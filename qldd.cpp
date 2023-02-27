@@ -171,6 +171,9 @@ void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
       demangled.replace(":__cxx11:", "");
       demangled.replace("std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string");
       demangled.replace("__gnu_cxx::__normal_iterator<char const*, std::string >", "std::string::const_iterator");
+      demangled.replace("std::__wrap_iter<char const*>", "std::string::const_iterator");
+      demangled.replace("std::basic_istream<char, std::char_traits<char> >", "std::istream");
+      demangled.replace("std::basic_ostream<char, std::char_traits<char> >", "std::ostream");
     }
     std::unique_ptr<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
     item->setToolTip(demangled);
