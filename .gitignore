@@ -13,3 +13,7 @@ qrc_*.cpp
 /cmake-build-release/
 /.DS_Store
 /CMakeLists.txt.user
+/cmake-build-debug/
+/cmake-build-qt-debug/
+/cmake-build-qt-relwithdebInfo/
+/cmake-build-relwithdebinfo/

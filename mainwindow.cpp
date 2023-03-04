@@ -7,6 +7,7 @@
 #include <QClipboard>
 #include <QFontDatabase>
 #include "finfdialog.h"
+#include "version.h"
 
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
@@ -103,10 +104,18 @@ void MainWindow::open() {
 }
 
 void MainWindow::about() {
+  QString application = tr("Application");
+  QString fullVersion = tr("Full Version");
+  QString qtVersion = tr("Qt Version");
+  QString buildDate = tr("Build Date");
   QMessageBox::about(this,
-                     tr("About Application"),
+                     "About",
                      tr("DependencyViewer shows all dependecies of a "
-                        "given executable or dynamic library. It is a GUI wrapper for the ldd, file and nm command."));
+                        "given executable or dynamic library. It is a GUI wrapper for the ldd, file and nm commands.") +
+                         QString("<qt><table><tr><td><b>") + application + ("</b></td><td>") + tr("DependencyViewerr") + QString("</td></tr>") +
+                         QString("<tr><td><b>") + fullVersion + ("</b></td><td>") + PROJECT_VERSION + QString("</td></tr>") + QString("<tr><td><b>") +
+                         qtVersion + ("</b></td><td>") + QT_VERSION_STR + QString("</td></tr>") + QString("<tr><td><b>") + buildDate +
+                         ("</b></td><td>") + COMMITTER_DATE + QString("</td></tr>") + QString("</td></tr></table></qt>"));
 }
 
 void MainWindow::find() {
