@@ -1,0 +1,302 @@
+name: build and cpack
+on: [ push, pull_request ]
+jobs:
+  ubuntu-22-04:
+    runs-on: ubuntu-latest
+    strategy:
+      #
+      # matrix for containers
+      #
+      matrix:
+        container:
+          - ubuntu:22.04
+
+    container:
+      image: ${{ matrix.container }}
+
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      - name: Get commit sha
+        id: git_sha
+        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      # install dependencies
+      - name: devel-pkgs
+        run: |
+          apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
+      # build project
+      - name: mkdir
+        run: ls -l && mkdir cmake-build-release
+      - name: cmake cmake-build-release
+        run: cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
+      - name: cmake make
+        run: cmake --build cmake-build-release/ --target all
+        env:
+          MAKEFLAGS: "-j2"
+      - name: cpack
+        run: cd cmake-build-release && cpack -G DEB && cd ..
+        # upload artifact
+      - uses: mad9000/actions-find-and-replace-string@3
+        id: container
+        with:
+          source: ${{ matrix.container }}
+          find: ':'        # we want to remove : from container name
+          replace: '-'     # and replace it with -
+
+      - name: Upload Qldd binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
+          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+  ubuntu-20-04:
+    runs-on: ubuntu-latest
+    strategy:
+      #
+      # matrix for containers
+      #
+      matrix:
+        container:
+          - ubuntu:20.04
+
+    container:
+      image: ${{ matrix.container }}
+
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      - name: Get commit sha
+        id: git_sha
+        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      # install dependencies
+      - name: devel-pkgs
+        run: | 
+          apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
+      # build project
+      - name: mkdir
+        run: mkdir cmake-build-release
+      - name: cmake cmake-build-release
+        run: cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
+      - name: cmake make
+        run: cmake --build cmake-build-release/ --target all
+        env:
+          MAKEFLAGS: "-j2"
+      - name: cpack
+        run: cd cmake-build-release && cpack -G DEB && cd ..
+        # upload artifact
+      - uses: mad9000/actions-find-and-replace-string@3
+        id: container
+        with:
+          source: ${{ matrix.container }}
+          find: ':'        # we want to remove : from container name
+          replace: '-'     # and replace it with -
+
+      - name: Upload Qldd binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
+          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+  debian-bullseye:
+    runs-on: ubuntu-latest
+    strategy:
+      #
+      # matrix for containers
+      #
+      matrix:
+        container:
+          - debian:bullseye
+
+    container:
+      image: ${{ matrix.container }}
+
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      - name: Get commit sha
+        id: git_sha
+        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      # install dependencies
+      - name: devel-pkgs
+        run: | 
+          apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
+      # build project
+      - name: mkdir
+        run: mkdir cmake-build-release
+      - name: cmake cmake-build-release
+        run: cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
+      - name: cmake make
+        run: cmake --build cmake-build-release/ --target all
+        env:
+          MAKEFLAGS: "-j2"
+      - name: cpack
+        run: cd cmake-build-release && cpack -G DEB && cd ..
+        # upload artifact
+      - uses: mad9000/actions-find-and-replace-string@3
+        id: container
+        with:
+          source: ${{ matrix.container }}
+          find: ':'        # we want to remove : from container name
+          replace: '-'     # and replace it with -
+
+      - name: Upload Qldd binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
+          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+  debian-buster:
+    runs-on: ubuntu-latest
+    strategy:
+      #
+      # matrix for containers
+      #
+      matrix:
+        container:
+          - debian:buster
+
+    container:
+      image: ${{ matrix.container }}
+
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      - name: Get commit sha
+        id: git_sha
+        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      # install dependencies
+      - name: devel-pkgs
+        run: |
+          apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
+      # build project
+      - name: mkdir
+        run: mkdir cmake-build-release
+      - name: cmake cmake-build-release
+        run: cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
+      - name: cmake make
+        run: cmake --build cmake-build-release/ --target all
+        env:
+          MAKEFLAGS: "-j2"
+      - name: cpack
+        run: cd cmake-build-release && cpack -G DEB && cd ..
+        # upload artifact
+      - uses: mad9000/actions-find-and-replace-string@3
+        id: container
+        with:
+          source: ${{ matrix.container }}
+          find: ':'        # we want to remove : from container name
+          replace: '-'     # and replace it with -
+
+      - name: Upload Qldd binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
+          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+  centos-latest:
+    runs-on: ubuntu-latest
+    strategy:
+      #
+      # matrix for containers
+      #
+      matrix:
+        container:
+          - centos:latest
+
+    container:
+      image: ${{ matrix.container }}
+
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      - name: Get commit sha
+        id: git_sha
+        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      # install dependencies
+      - name: devel-pkgs
+        run: |
+          cd /etc/yum.repos.d/ &&
+          sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* &&
+          sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* &&
+          cd / &&
+          yum update -y && yum install -yq epel-next-release &&
+          yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build
+      # build project
+      - name: mkdir
+        run: mkdir cmake-build-release
+      - name: cmake cmake-build-release
+        run: cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
+      - name: cmake make
+        run: cmake --build cmake-build-release/ --target all
+        env:
+          MAKEFLAGS: "-j2"
+      - name: cpack
+        run: cd cmake-build-release && cpack -G RPM && cd ..
+        # upload artifact
+      - uses: mad9000/actions-find-and-replace-string@3
+        id: container
+        with:
+          source: ${{ matrix.container }}
+          find: ':'        # we want to remove : from container name
+          replace: '-'     # and replace it with -
+
+      - name: Upload Qldd binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
+          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+  fedora-latest:
+    runs-on: ubuntu-latest
+    strategy:
+      #
+      # matrix for containers
+      #
+      matrix:
+        container:
+          - fedora:latest
+
+    container:
+      image: ${{ matrix.container }}
+
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      - name: Get commit sha
+        id: git_sha
+        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      # install dependencies
+      - name: devel-pkgs
+        run: |
+          yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build
+      # build project
+      - name: mkdir
+        run: mkdir cmake-build-release
+      - name: cmake cmake-build-release
+        run: cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
+      - name: cmake make
+        run: cmake --build cmake-build-release/ --target all
+        env:
+          MAKEFLAGS: "-j2"
+      - name: cpack
+        run: cd cmake-build-release && cpack -G RPM && cd ..
+        # upload artifact
+      - uses: mad9000/actions-find-and-replace-string@3
+        id: container
+        with:
+          source: ${{ matrix.container }}
+          find: ':'        # we want to remove : from container name
+          replace: '-'     # and replace it with -
+
+      - name: Upload Qldd binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
+          path: cmake-build-release/Qldd-1.1.1-x86_64.???
