@@ -24,8 +24,7 @@ jobs:
       - uses: actions/checkout@v3
       # install dependencies
       - name: devel-pkgs
-        run: |
-          apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
+        run: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
       # build project
       - name: mkdir
         run: ls -l && mkdir cmake-build-release
@@ -73,8 +72,7 @@ jobs:
       - uses: actions/checkout@v3
       # install dependencies
       - name: devel-pkgs
-        run: | 
-          apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
+        run: apt-get update -y && apt-get install -yq binutils python-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
       # build project
       - name: mkdir
         run: mkdir cmake-build-release
@@ -122,8 +120,7 @@ jobs:
       - uses: actions/checkout@v3
       # install dependencies
       - name: devel-pkgs
-        run: | 
-          apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
+        run: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
       # build project
       - name: mkdir
         run: mkdir cmake-build-release
@@ -171,8 +168,7 @@ jobs:
       - uses: actions/checkout@v3
       # install dependencies
       - name: devel-pkgs
-        run: |
-          apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
+        run: apt-get update -y && apt-get install -yq binutils python-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++
       # build project
       - name: mkdir
         run: mkdir cmake-build-release
@@ -274,8 +270,7 @@ jobs:
       - uses: actions/checkout@v3
       # install dependencies
       - name: devel-pkgs
-        run: |
-          yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build
+        run: yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build
       # build project
       - name: mkdir
         run: mkdir cmake-build-release
