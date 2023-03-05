@@ -114,7 +114,9 @@ else()
     set(CPACK_STRIP_FILES TRUE)
 endif()
 
-install(TARGETS Qldd RUNTIME BUNDLE DESTINATION bin COMPONENT application)
+install(TARGETS Qldd RUNTIME DESTINATION bin
+                     BUNDLE DESTINATION bin
+                     COMPONENT application)
 install(FILES ${CMAKE_SOURCE_DIR}/resources/qldd.desktop DESTINATION share/applications/ COMPONENT application)
 install(FILES ${CMAKE_SOURCE_DIR}/resources/Qldd.png DESTINATION share/pixmaps/ COMPONENT application)
 install(FILES ${CMAKE_SOURCE_DIR}/nemo/actions/dependency-viewer.nemo_action
