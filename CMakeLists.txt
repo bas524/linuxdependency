@@ -14,10 +14,32 @@ project(Qldd
 find_package(VersionHeader)
 set(PROJECT_VERSION "${MAJOR}.${MINOR}.${PATCH}.${COMMITTER_SHORTSHA}")
 
+function(get_linux_lsb_release_information)
+    find_program(LSB_RELEASE_EXEC lsb_release)
+    if(NOT LSB_RELEASE_EXEC)
+        message(FATAL_ERROR "Could not detect lsb_release executable, can not gather required information")
+    endif()
+
+    execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --id OUTPUT_VARIABLE LSB_RELEASE_ID_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --release OUTPUT_VARIABLE LSB_RELEASE_VERSION_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --codename OUTPUT_VARIABLE LSB_RELEASE_CODENAME_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    set(LSB_RELEASE_ID_SHORT "${LSB_RELEASE_ID_SHORT}" PARENT_SCOPE)
+    set(LSB_RELEASE_VERSION_SHORT "${LSB_RELEASE_VERSION_SHORT}" PARENT_SCOPE)
+    set(LSB_RELEASE_CODENAME_SHORT "${LSB_RELEASE_CODENAME_SHORT}" PARENT_SCOPE)
+endfunction()
+
 message(STATUS "COMMITTER_FULLSHA ${COMMITTER_FULLSHA}")
 message(STATUS "COMMITTER_SHORTSHA ${COMMITTER_SHORTSHA}")
 message(STATUS "COMMITTER_DATE ${COMMITTER_DATE}")
 message(STATUS "PROJECT_VERSION ${PROJECT_VERSION}")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    get_linux_lsb_release_information()
+    message(STATUS "OS Linux ${LSB_RELEASE_ID_SHORT} ${LSB_RELEASE_VERSION_SHORT} ${LSB_RELEASE_CODENAME_SHORT}")
+else()
+    message(STATUS "OS ${CMAKE_SYSTEM_NAME}")
+    message(STATUS "OS VERSION ${CMAKE_SYSTEM_VERSION}")
+endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -92,7 +114,7 @@ else()
     set(CPACK_STRIP_FILES TRUE)
 endif()
 
-install(TARGETS Qldd RUNTIME DESTINATION bin COMPONENT application)
+install(TARGETS Qldd RUNTIME BUNDLE DESTINATION bin COMPONENT application)
 install(FILES ${CMAKE_SOURCE_DIR}/resources/qldd.desktop DESTINATION share/applications/ COMPONENT application)
 install(FILES ${CMAKE_SOURCE_DIR}/resources/Qldd.png DESTINATION share/pixmaps/ COMPONENT application)
 install(FILES ${CMAKE_SOURCE_DIR}/nemo/actions/dependency-viewer.nemo_action
@@ -134,7 +156,14 @@ set(CPACK_SOURCE_IGNORE_FILES
     "Makefile\\\\.in$"
     )
 
-
+set(PYTHON_NAUTILUS_DEB "python-nautilus")
+set(PYTHON_NAUTILUS_RPM "nautilus-python")
+if (LSB_RELEASE_ID_SHORT MATCHES "Ubuntu" AND LSB_RELEASE_CODENAME_SHORT MATCHES "jammy")
+    set(PYTHON_NAUTILUS_DEB "python3-nautilus")
+endif()
+if (LSB_RELEASE_ID_SHORT MATCHES "Debian" AND LSB_RELEASE_CODENAME_SHORT MATCHES "bullseye")
+    set(PYTHON_NAUTILUS_DEB "python3-nautilus")
+endif()
 set(CPACK_PACKAGE_NAME "Qldd")
 set(CPACK_PACKAGE_VERSION "${MAJOR}.${MINOR}.${PATCH}")
 set(CPACK_PACKAGE_VENDOR "community")
@@ -150,7 +179,7 @@ set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${CPACK_PACKAGE_MAINTAINER})
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION ${CPACK_PACKAGE_DESCRIPTION})
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE ${CMAKE_PROJECT_HOMEPAGE_URL})
 set(CPACK_DEBIAN_PACKAGE_LICENSE "Apache-2.0")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "python3-nautilus, binutils, libqt5core5a, libqt5gui5, libqt5widgets5")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "${PYTHON_NAUTILUS_DEB}, binutils, libqt5core5a, libqt5gui5, libqt5widgets5")
 
 set(CPACK_RPM_PACKAGE_NAME ${CPACK_PACKAGE_NAME})
 set(CPACK_RPM_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION})
@@ -159,7 +188,7 @@ set(CPACK_RPM_PACKAGE_MAINTAINER ${CPACK_PACKAGE_MAINTAINER})
 set(CPACK_RPM_PACKAGE_DESCRIPTION ${CPACK_PACKAGE_DESCRIPTION})
 set(CPACK_RPM_PACKAGE_URL ${CMAKE_PROJECT_HOMEPAGE_URL})
 set(CPACK_RPM_PACKAGE_LICENSE "Apache-2.0")
-set(CPACK_RPM_PACKAGE_REQUIRES "python3-nautilus, binutils, qt5-qtbase")
+set(CPACK_RPM_PACKAGE_REQUIRES "${PYTHON_NAUTILUS_RPM}, binutils, qt5-qtbase")
 
 include(CPack)
 cpack_add_component(application DISPLAY_NAME "DependencyViewer" REQUIRED)
