@@ -123,7 +123,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/nemo/actions/dependency-viewer.nemo_action
         DESTINATION share/nemo/actions
         COMPONENT nemo-integration)
 install(FILES ${CMAKE_SOURCE_DIR}/nautilus-python/extensions/dependency-viewer.py
-        DESTINATION nautilus-python/extensions
+        DESTINATION share/nautilus-python/extensions
         COMPONENT nautilus-integration)
 
 set(CPACK_SOURCE_IGNORE_FILES
