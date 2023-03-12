@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=application/x-sharedlib;application/x-executable
+Actions=ViewDependency;
+
+[Desktop Action ViewDependency]
+Exec=Qldd "%u"
+Icon=/usr/share/pixmaps/Qldd.png
+
+Name=View Dependencies
+Name[ru]=Посмотреть зависимости

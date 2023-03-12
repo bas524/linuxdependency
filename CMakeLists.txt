@@ -160,6 +160,9 @@ else()
     install(FILES ${CMAKE_SOURCE_DIR}/nautilus-python/extensions/dependency-viewer-43.py
             DESTINATION share/nautilus-python/extensions
             COMPONENT nautilus-integration)
+    install(FILES ${CMAKE_SOURCE_DIR}/dolphin/kde-qldd-menu.desktop
+            DESTINATION share/kservices5/ServiceMenus
+            COMPONENT dolphin-integration)
 
     set(PYTHON_NAUTILUS_DEB "python-nautilus")
     set(PYTHON_NAUTILUS_RPM "nautilus-python")
