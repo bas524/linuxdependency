@@ -23,6 +23,10 @@ class MainWindow : public QMainWindow {
   void find();
   void myClose();
 
+  void showContextMenu(const QPoint &pos);
+
+  void copyExportItem();
+
   void on_checkBoxOwnerRead_clicked(bool checked);
 
   void on_checkBoxOwnerWrite_clicked(bool checked);
@@ -41,6 +45,10 @@ class MainWindow : public QMainWindow {
 
   void on_checkBoxOtherExec_clicked(bool checked);
 
+  void on_filterButton_clicked();
+
+  void on_resetButton_clicked();
+
  private:
   void createActions();
   void createMenus();
@@ -55,6 +63,7 @@ class MainWindow : public QMainWindow {
   QAction *aboutAct;
   QAction *aboutQtAct;
   QAction *exitAct;
+  QFont fixedFont;
 };
 
 #endif  // MAINWINDOW_H

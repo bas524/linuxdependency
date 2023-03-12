@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.1.1
+Name=DependencyViewer
+GenericName=DependencyViewer
+Comment=DependencyViewer for libraries and executable
+Icon=/usr/share/pixmaps/Qldd.png
+Terminal=false
+Exec=Qldd
+MimeType=application/x-sharedlib;application/x-executable
+Categories=Utility

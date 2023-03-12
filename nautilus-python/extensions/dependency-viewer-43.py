@@ -18,7 +18,7 @@ class OpenQlddExtension(GObject.GObject, Nautilus.MenuProvider):
         for file in files:
             self._open_qldd(file)
 
-    def get_file_items(self, window, files):
+    def get_file_items(self, files):
         item = Nautilus.MenuItem(
             name='Qldd',
             label='View dependencies',
