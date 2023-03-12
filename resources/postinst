@@ -1,0 +1,17 @@
+#!/usr/bin/bash
+
+set -e
+
+GNOME_SHELL_VERSION_STR=$(gnome-shell --version)
+
+[[ ${GNOME_SHELL_VERSION_STR} =~ ([0-9]+) ]]
+GNOME_SHELL_VERSION=${BASH_REMATCH[1]}
+
+if [[ ${GNOME_SHELL_VERSION} < 43 ]]
+then
+	rm -f /usr/share/nautilus-python/extensions/dependency-viewer-43.py
+else
+	rm -f /usr/share/nautilus-python/extensions/dependency-viewer.py
+fi
+
+exit 0

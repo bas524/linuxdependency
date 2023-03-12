@@ -154,19 +154,13 @@ else()
     install(FILES ${CMAKE_SOURCE_DIR}/nemo/actions/dependency-viewer.nemo_action
             DESTINATION share/nemo/actions
             COMPONENT nemo-integration)
-    set(GNOME_SHELL_VERSION_STR "unknown 1")
-    execute_process(COMMAND gnome-shell --version OUTPUT_VARIABLE GNOME_SHELL_VERSION_STR)
-    string(REGEX MATCH "[0-9]+" GNOME_SHELL_VERSION "${GNOME_SHELL_VERSION_STR}")
-    message(STATUS "GNOME_SHELL_VERSION is ${GNOME_SHELL_VERSION}")
-    if (GNOME_SHELL_VERSION LESS 43)
-        install(FILES ${CMAKE_SOURCE_DIR}/nautilus-python/extensions/dependency-viewer.py
-                DESTINATION share/nautilus-python/extensions
-                COMPONENT nautilus-integration)
-    else()
-        install(FILES ${CMAKE_SOURCE_DIR}/nautilus-python/extensions/dependency-viewer-43.py
-                DESTINATION share/nautilus-python/extensions
-                COMPONENT nautilus-integration)
-    endif()
+    install(FILES ${CMAKE_SOURCE_DIR}/nautilus-python/extensions/dependency-viewer.py
+            DESTINATION share/nautilus-python/extensions
+            COMPONENT nautilus-integration)
+    install(FILES ${CMAKE_SOURCE_DIR}/nautilus-python/extensions/dependency-viewer-43.py
+            DESTINATION share/nautilus-python/extensions
+            COMPONENT nautilus-integration)
+
     set(PYTHON_NAUTILUS_DEB "python-nautilus")
     set(PYTHON_NAUTILUS_RPM "nautilus-python")
     if (LSB_RELEASE_ID_SHORT MATCHES "Ubuntu" AND LSB_RELEASE_CODENAME_SHORT MATCHES "jammy")
@@ -191,6 +185,7 @@ else()
     set(CPACK_DEBIAN_PACKAGE_HOMEPAGE ${CMAKE_PROJECT_HOMEPAGE_URL})
     set(CPACK_DEBIAN_PACKAGE_LICENSE "Apache-2.0")
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "${PYTHON_NAUTILUS_DEB}, binutils, libqt5core5a, libqt5gui5, libqt5widgets5")
+    SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_SOURCE_DIR}/resources/postinst")
 
     set(CPACK_RPM_PACKAGE_NAME ${CPACK_PACKAGE_NAME})
     set(CPACK_RPM_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION})
@@ -200,6 +195,7 @@ else()
     set(CPACK_RPM_PACKAGE_URL ${CMAKE_PROJECT_HOMEPAGE_URL})
     set(CPACK_RPM_PACKAGE_LICENSE "Apache-2.0")
     set(CPACK_RPM_PACKAGE_REQUIRES "${PYTHON_NAUTILUS_RPM}, binutils, qt5-qtbase")
+    SET(CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/resources/postinst")
 endif()
 include(CPack)
 cpack_add_component(application DISPLAY_NAME "DependencyViewer" REQUIRED)
