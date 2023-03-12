@@ -154,10 +154,8 @@ else()
     install(FILES ${CMAKE_SOURCE_DIR}/nemo/actions/dependency-viewer.nemo_action
             DESTINATION share/nemo/actions
             COMPONENT nemo-integration)
-    set(GNOME_SHELL_VERSION_STR "1")
-    if (NOT APPLE)
-      execute_process(COMMAND "gnome-shell --version" OUTPUT_VARIABLE GNOME_SHELL_VERSION_STR)
-    endif()
+    set(GNOME_SHELL_VERSION_STR "unknown 1")
+    execute_process(COMMAND gnome-shell --version OUTPUT_VARIABLE GNOME_SHELL_VERSION_STR)
     string(REGEX MATCH "[0-9]+" GNOME_SHELL_VERSION "${GNOME_SHELL_VERSION_STR}")
     message(STATUS "GNOME_SHELL_VERSION is ${GNOME_SHELL_VERSION}")
     if (GNOME_SHELL_VERSION LESS 43)
