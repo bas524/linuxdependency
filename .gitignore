@@ -6,6 +6,7 @@ qrc_*.cpp
 /Makefile
 /Qldd
 *.qmake.stash
+/.vscode/
 /cmake-build-Debug/
 /cmake-build-Release/
 /.idea/
@@ -17,3 +18,4 @@ qrc_*.cpp
 /cmake-build-qt-debug/
 /cmake-build-qt-relwithdebInfo/
 /cmake-build-relwithdebinfo/
+/cmake-vsc-build/
