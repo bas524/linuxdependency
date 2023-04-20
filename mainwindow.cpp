@@ -6,8 +6,26 @@
 #include <QMessageBox>
 #include <QClipboard>
 #include <QFontDatabase>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
+#include <QDir>
 #include "finfdialog.h"
 #include "version.h"
+#include "config.h"
+
+static const QHash<QString, QString> defaultRules =
+    QHash<QString, QString>{{":__1:", ""},
+                            {":__cxx11:", ""},
+                            {"std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string"},
+                            {"std::basic_string<char, std::char_traits<char>, std::allocator<char>>", "std::string"},
+                            {"__gnu_cxx::__normal_iterator<char const*, std::string >", "std::string::const_iterator"},
+                            {"std::__wrap_iter<char const*>", "std::string::const_iterator"},
+                            {"std::basic_istream<char, std::char_traits<char>>", "std::istream"},
+                            {"std::basic_ostream<char, std::char_traits<char>>", "std::ostream"},
+                            {"std::basic_istream<char, std::char_traits<char> >", "std::istream"},
+                            {"std::basic_ostream<char, std::char_traits<char> >", "std::ostream"}};
 
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
@@ -47,6 +65,8 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     header->setText(0, "Dependency");
   }
   ui->tabWidget->setCurrentIndex(0);
+
+  initDemangleRules();
 }
 
 MainWindow::~MainWindow() {
@@ -62,7 +82,7 @@ void MainWindow::fillExportTable(const QString &filter) {
 }
 
 void MainWindow::reset(const QString &fileName) {
-  qldd.reset(new QLdd(fileName, qApp->applicationDirPath()));
+  qldd.reset(new QLdd(fileName, qApp->applicationDirPath(), _demangleRules));
   QTreeWidgetItem *header = ui->treeWidget->headerItem();
   header->setText(0, "Dependency");
   qldd->fillDependency(*ui->treeWidget);
@@ -163,6 +183,42 @@ void MainWindow::createMenus() {
 
   ui->listWidgetExportTable->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(ui->listWidgetExportTable, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+}
+
+void MainWindow::initDemangleRules() {
+  QDir d(QDir::home());
+  if (!d.exists(DEMANGLE_RULES_DEFAULT_PATH)) {
+    if (!d.mkdir(DEMANGLE_RULES_DEFAULT_PATH)) {
+      QMessageBox::critical(this, "Demangle rules", "Can't createdirectory " + d.homePath() + DEMANGLE_RULES_DEFAULT_PATH);
+    }
+  }
+
+  QString path = d.homePath() + "/" + DEMANGLE_RULES_DEFAULT_PATH + "/rules.json";
+  QFile relesFile(path);
+  if (!relesFile.exists()) {
+    if (relesFile.open(QFile::OpenModeFlag::ReadWrite | QFile::OpenModeFlag::Text)) {
+      QJsonDocument doc;
+      QJsonObject obj;
+      QJsonObject arrRules;
+      for (auto item = defaultRules.begin(); item != defaultRules.end(); ++item) {
+        arrRules[item.key()] = item.value();
+      }
+      obj["rules"] = arrRules;
+      doc.setObject(obj);
+      relesFile.write(doc.toJson());
+      relesFile.close();
+    }
+  }
+  if (relesFile.open(QFile::OpenModeFlag::ReadWrite | QFile::OpenModeFlag::Text)) {
+    QString val = relesFile.readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
+    QJsonObject obj = doc.object();
+    QJsonObject arrRules = obj["rules"].toObject();
+    QStringList keys = arrRules.keys();
+    for (const auto &item : qAsConst(keys)) {
+      _demangleRules.insert(item, arrRules[item].toString());
+    }
+  }
 }
 
 void MainWindow::showContextMenu(const QPoint &pos) {

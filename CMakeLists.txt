@@ -14,6 +14,8 @@ project(Qldd
 find_package(VersionHeader)
 set(PROJECT_VERSION "${MAJOR}.${MINOR}.${PATCH}.${COMMITTER_SHORTSHA}")
 
+find_package(ConfigPath)
+
 function(get_linux_lsb_release_information)
     find_program(LSB_RELEASE_EXEC lsb_release)
     if(NOT LSB_RELEASE_EXEC)
@@ -77,7 +79,7 @@ set(SOURCES
     resources/resources.qrc
     )
 target_sources(Qldd PRIVATE ${SOURCES})
-target_compile_definitions(Qldd PRIVATE -DPROJECT_VERSION="${PROJECT_VERSION}")
+target_compile_definitions(Qldd PRIVATE -DPROJECT_VERSION="${PROJECT_VERSION}" -DQ_COMPILER_INITIALIZER_LISTS)
 target_link_libraries(Qldd PRIVATE ${QtVer}::Widgets)
 
 set(CPACK_SOURCE_IGNORE_FILES

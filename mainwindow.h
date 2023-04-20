@@ -5,6 +5,7 @@
 #include <qldd.h>
 #include <QShortcut>
 #include <QScopedPointer>
+#include <QHash>
 
 namespace Ui {
 class MainWindow;
@@ -52,6 +53,7 @@ class MainWindow : public QMainWindow {
  private:
   void createActions();
   void createMenus();
+  void initDemangleRules();
   void reset(const QString &fileName);
   Ui::MainWindow *ui;
   QScopedPointer<QLdd> qldd;
@@ -64,6 +66,7 @@ class MainWindow : public QMainWindow {
   QAction *aboutQtAct;
   QAction *exitAct;
   QFont fixedFont;
+  QHash<QString, QString> _demangleRules;
 };
 
 #endif  // MAINWINDOW_H

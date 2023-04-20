@@ -6,6 +6,7 @@
 #include <QListWidget>
 #include <QFileInfo>
 #include <QFont>
+#include <QHash>
 
 struct QMOD {
   bool read;
@@ -15,7 +16,7 @@ struct QMOD {
 
 class QLdd {
  public:
-  QLdd(QString fileName, QString lddDirPath);
+  QLdd(QString fileName, QString lddDirPath, QHash<QString, QString> demangleRules);
   virtual ~QLdd();
 
   int64_t getFileSize() const;
@@ -63,6 +64,7 @@ class QLdd {
   QMOD _otherMod{};
   QString _ownerName;
   QString _groupName;
+  QHash<QString, QString> _demangleRules;
   QString getHumanReadableDataSize() const;
 };
 

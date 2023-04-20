@@ -1,0 +1,6 @@
+#ifndef CONFIG_H_IN
+#define CONFIG_H_IN
+
+#cmakedefine DEMANGLE_RULES_DEFAULT_PATH "@DEMANGLE_RULES_DEFAULT_PATH@"
+
+#endif // CONFIG_H_IN
