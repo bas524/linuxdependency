@@ -15,17 +15,17 @@
 #include "version.h"
 #include "config.h"
 
-static const QHash<QString, QString> defaultRules =
-    QHash<QString, QString>{{":__1:", ""},
-                            {":__cxx11:", ""},
-                            {"std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string"},
-                            {"std::basic_string<char, std::char_traits<char>, std::allocator<char>>", "std::string"},
-                            {"__gnu_cxx::__normal_iterator<char const*, std::string >", "std::string::const_iterator"},
-                            {"std::__wrap_iter<char const*>", "std::string::const_iterator"},
-                            {"std::basic_istream<char, std::char_traits<char>>", "std::istream"},
-                            {"std::basic_ostream<char, std::char_traits<char>>", "std::ostream"},
-                            {"std::basic_istream<char, std::char_traits<char> >", "std::istream"},
-                            {"std::basic_ostream<char, std::char_traits<char> >", "std::ostream"}};
+static const QMap<QString, QString> defaultRules =
+    QMap<QString, QString>{{":__1:", ""},
+                           {":__cxx11:", ""},
+                           {"std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string"},
+                           {"std::basic_string<char, std::char_traits<char>, std::allocator<char>>", "std::string"},
+                           {"__gnu_cxx::__normal_iterator<char const*, std::string >", "std::string::const_iterator"},
+                           {"std::__wrap_iter<char const*>", "std::string::const_iterator"},
+                           {"std::basic_istream<char, std::char_traits<char>>", "std::istream"},
+                           {"std::basic_ostream<char, std::char_traits<char>>", "std::ostream"},
+                           {"std::basic_istream<char, std::char_traits<char> >", "std::istream"},
+                           {"std::basic_ostream<char, std::char_traits<char> >", "std::ostream"}};
 
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),

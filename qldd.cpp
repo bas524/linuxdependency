@@ -42,8 +42,12 @@ void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
   } while (!line.isNull());
 }
 
-QLdd::QLdd(QString fileName, QString lddDirPath, QHash<QString, QString> demangleRules)
-    : _fileName(std::move(fileName)), _fileInfo(_fileName), _link(false), _lddDirPath(std::move(lddDirPath)), _demangleRules(std::move(demangleRules)) {
+QLdd::QLdd(QString fileName, QString lddDirPath, QMap<QString, QString> demangleRules)
+    : _fileName(std::move(fileName)),
+      _fileInfo(_fileName),
+      _link(false),
+      _lddDirPath(std::move(lddDirPath)),
+      _demangleRules(std::move(demangleRules)) {
   _ownerMod.read = _fileInfo.permission(QFile::ReadOwner);
   _ownerMod.write = _fileInfo.permission(QFile::WriteOwner);
   _ownerMod.execute = _fileInfo.permission(QFile::ExeOwner);
@@ -159,7 +163,6 @@ void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
   int status = 0;
   std::stringstream ss;
   ss << NM << " " << _fileName.toStdString() << " | grep \\ T\\ ";
-
   execAndDoOnEveryLine(ss.str(), [&status, &listWidget, &filter, this](const QString &line) {
     QStringList info = line.split(" ");
     QString demangled(info.at(2));
