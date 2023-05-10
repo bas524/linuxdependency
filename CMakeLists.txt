@@ -76,6 +76,10 @@ set(SOURCES
     finfdialog.cpp
     finfdialog.h
     finfdialog.ui
+    demanglerules.h
+    demanglerules.cpp
+    demanglerules.ui
+    customtypes.h
     resources/resources.qrc
     )
 target_sources(Qldd PRIVATE ${SOURCES})

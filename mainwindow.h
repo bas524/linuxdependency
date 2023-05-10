@@ -18,6 +18,12 @@ class MainWindow : public QMainWindow {
   explicit MainWindow(const QString &fileName, QWidget *parent = nullptr);
   ~MainWindow() override;
   void fillExportTable(const QString &filter);
+  const RulesMap &demangleRules() const;
+  QFont getFixedFont() const;
+  void saveDemangleRules(const RulesMap &rules);
+  void initDemangleRules();
+  void reset();
+
  private slots:
   void open();
   void about();
@@ -50,12 +56,13 @@ class MainWindow : public QMainWindow {
 
   void on_resetButton_clicked();
 
+  void on_rulesButton_clicked();
+
  private:
   void createActions();
   void createMenus();
-  void initDemangleRules();
-  void reset(const QString &fileName);
   Ui::MainWindow *ui;
+  QString _fileName;
   QScopedPointer<QLdd> qldd;
   QShortcut *shortcutClose;
   QShortcut *shortcutFind;
@@ -66,7 +73,7 @@ class MainWindow : public QMainWindow {
   QAction *aboutQtAct;
   QAction *exitAct;
   QFont fixedFont;
-  QMap<QString, QString> _demangleRules;
+  RulesMap _demangleRules;
 };
 
 #endif  // MAINWINDOW_H

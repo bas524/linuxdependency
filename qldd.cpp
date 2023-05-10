@@ -42,7 +42,7 @@ void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
   } while (!line.isNull());
 }
 
-QLdd::QLdd(QString fileName, QString lddDirPath, QMap<QString, QString> demangleRules)
+QLdd::QLdd(QString fileName, QString lddDirPath, RulesMap demangleRules)
     : _fileName(std::move(fileName)),
       _fileInfo(_fileName),
       _link(false),
@@ -171,7 +171,7 @@ void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
       demangled = QString::fromLocal8Bit(realname);
       ::free(realname);
       for (auto item = _demangleRules.begin(); item != _demangleRules.end(); ++item) {
-        demangled.replace(item.key(), item.value());
+        demangled.replace(item->first, item->second);
       }
     }
     std::unique_ptr<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
