@@ -299,6 +299,7 @@ jobs:
           path: cmake-build-release/Qldd-1.1.1-x86_64.???
   macos-clang-cmake:
     runs-on: macos-latest
+
     steps:
     - name: Get current date
       id: date
@@ -321,11 +322,10 @@ jobs:
       MAKEFLAGS: "-j2"
     - name: cpack
     run: cd cmake-build-release && cpack -G DragNDrop && cd ..
-    # upload artifact
-    - uses: mad9000/actions-find-and-replace-string@3
-    id: container
-    with:
-      source: ${{ matrix.container }}
-      find: ':'        # we want to remove : from container name
-      replace: '-'     # and replace it with -
+
+    - name: Upload Qldd binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: Qldd-1.1.1-Darwin.dmg
+        path: cmake-build-release/Qldd-1.1.1-Darwin.dmg
 
