@@ -297,3 +297,35 @@ jobs:
         with:
           name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
           path: cmake-build-release/Qldd-1.1.1-x86_64.???
+  macos-clang-cmake:
+    runs-on: macos-latest
+    steps:
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+    - name: Get commit sha
+      id: git_sha
+      run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+    - uses: actions/checkout@v3
+    # install dependencies
+    - name: brew-pkgs
+    run: brew install qt@5
+    # build project
+    - name: mkdir
+    run: mkdir cmake-build-release
+    - name: cmake cmake-build-release
+    run: cmake -DCMAKE_PREFIX_PATH=$(brew --prefix)/opt/qt5 -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
+    - name: cmake make
+    run: cmake --build cmake-build-release/ --target all
+    env:
+      MAKEFLAGS: "-j2"
+    - name: cpack
+    run: cd cmake-build-release && cpack -G DragNDrop && cd ..
+    # upload artifact
+    - uses: mad9000/actions-find-and-replace-string@3
+    id: container
+    with:
+      source: ${{ matrix.container }}
+      find: ':'        # we want to remove : from container name
+      replace: '-'     # and replace it with -
+
