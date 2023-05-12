@@ -13,7 +13,7 @@ project(Qldd
 
 find_package(VersionHeader)
 set(PROJECT_VERSION "${MAJOR}.${MINOR}.${PATCH}.${COMMITTER_SHORTSHA}")
-
+file(WRITE ${CMAKE_SOURCE_DIR}/VERSION "${MAJOR}.${MINOR}.${PATCH}")
 find_package(ConfigPath)
 
 function(get_linux_lsb_release_information)

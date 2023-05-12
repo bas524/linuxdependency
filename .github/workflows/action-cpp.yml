@@ -34,6 +34,9 @@ jobs:
         run: cmake --build cmake-build-release/ --target all
         env:
           MAKEFLAGS: "-j2"
+      - name: get-version
+        id: get-version
+        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
@@ -47,8 +50,8 @@ jobs:
       - name: Upload Qldd binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
-          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+          name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
+          path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   ubuntu-20-04:
     runs-on: ubuntu-latest
     strategy:
@@ -84,6 +87,9 @@ jobs:
         run: cmake --build cmake-build-release/ --target all
         env:
           MAKEFLAGS: "-j2"
+      - name: get-version
+        id: get-version
+        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
@@ -97,8 +103,8 @@ jobs:
       - name: Upload Qldd binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
-          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+          name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
+          path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   debian-bullseye:
     runs-on: ubuntu-latest
     strategy:
@@ -132,6 +138,9 @@ jobs:
         run: cmake --build cmake-build-release/ --target all
         env:
           MAKEFLAGS: "-j2"
+      - name: get-version
+        id: get-version
+        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
@@ -145,8 +154,8 @@ jobs:
       - name: Upload Qldd binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
-          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+          name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
+          path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   debian-buster:
     runs-on: ubuntu-latest
     strategy:
@@ -180,6 +189,9 @@ jobs:
         run: cmake --build cmake-build-release/ --target all
         env:
           MAKEFLAGS: "-j2"
+      - name: get-version
+        id: get-version
+        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
@@ -193,8 +205,8 @@ jobs:
       - name: Upload Qldd binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
-          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+          name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
+          path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   centos-latest:
     runs-on: ubuntu-latest
     strategy:
@@ -234,6 +246,9 @@ jobs:
         run: cmake --build cmake-build-release/ --target all
         env:
           MAKEFLAGS: "-j2"
+      - name: get-version
+        id: get-version
+        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
@@ -247,8 +262,8 @@ jobs:
       - name: Upload Qldd binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
-          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+          name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
+          path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   fedora-latest:
     runs-on: ubuntu-latest
     strategy:
@@ -282,6 +297,9 @@ jobs:
         run: cmake --build cmake-build-release/ --target all
         env:
           MAKEFLAGS: "-j2"
+      - name: get-version
+        id: get-version
+        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
@@ -295,8 +313,8 @@ jobs:
       - name: Upload Qldd binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ format('Qldd-1.1.1.{0}', steps.container.outputs.value) }}
-          path: cmake-build-release/Qldd-1.1.1-x86_64.???
+          name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
+          path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   macos-clang-cmake:
     runs-on: macos-latest
 
@@ -320,10 +338,13 @@ jobs:
         run: cmake --build cmake-build-release/ --target all
         env:
           MAKEFLAGS: "-j2"
+      - name: get-version
+        id: get-version
+        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DragNDrop && cd ..
       - uses: actions/upload-artifact@v3
         with:
-          name: Qldd-1.1.1-Darwin.dmg
-          path: cmake-build-release/Qldd-1.1.1-Darwin.dmg
+          name: ${{ format('Qldd-{0}-Darwin.dmg', steps.get-version.outputs.prj_ver) }}
+          path: cmake-build-release/${{ format('Qldd-{0}-Darwin.dmg', steps.get-version.outputs.prj_ver) }}
 
