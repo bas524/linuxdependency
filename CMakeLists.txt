@@ -121,6 +121,11 @@ set(CPACK_SOURCE_IGNORE_FILES
 if(APPLE)
     set(CMAKE_MACOSX_BUNDLE ON)
     set(CMAKE_MACOSX_RPATH ON)
+    set(CPACK_DMG_BACKGROUND_IMAGE
+          "${CMAKE_SOURCE_DIR}/resources/CMakeDMGBackground.tif")
+      set(CPACK_DMG_DS_STORE_SETUP_SCRIPT
+          "${CMAKE_SOURCE_DIR}/resources/CMakeDMGSetup.scpt")
+
     install(TARGETS Qldd
             BUNDLE DESTINATION .
             RUNTIME DESTINATION .)
