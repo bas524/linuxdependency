@@ -1,7 +1,8 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file>Qldd.ico</file>
-    <file>Qldd.png</file>
-    <file>monofont.ttf</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>Qldd.ico</file>
+        <file>Qldd.png</file>
+        <file>monofont.ttf</file>
+        <file>rules.json</file>
+    </qresource>
 </RCC>

@@ -135,7 +135,7 @@ if(APPLE)
                           MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
                           MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
                           MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-                          MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2020 bas524@yandex.ru"
+                          MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2023 bas524@yandex.ru"
                           )
     if (${QtVer} STREQUAL Qt5)
       add_custom_command(TARGET Qldd

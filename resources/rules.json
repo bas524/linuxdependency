@@ -1,0 +1,115 @@
+{
+    "rules": [
+        {
+            ":__1:": ""
+        },
+        {
+            ":__cxx11:": ""
+        },
+        {
+            "__gnu_cxx::__normal_iterator<char const*, std::string >": "std::string::const_iterator"
+        },
+        {
+            "std::__wrap_iter<char const*>": "std::string::const_iterator"
+        },
+        {
+            "std::basic_istream<char, std::char_traits<char> >": "std::istream"
+        },
+        {
+            "std::basic_istream<char, std::char_traits<char>>": "std::istream"
+        },
+        {
+            "std::basic_ostream<char, std::char_traits<char> >": "std::ostream"
+        },
+        {
+            "std::basic_ostream<char, std::char_traits<char>>": "std::ostream"
+        },
+        {
+            "std::basic_string<char, std::char_traits<char>, std::allocator<char> >": "std::string"
+        },
+        {
+            "std::basic_string<char, std::char_traits<char>, std::allocator<char>>": "std::string"
+        },
+        {
+            "std::vector<Poco::Any, std::allocator<Poco::Any>>": "std::vector<Poco::Any>"
+        },
+        {
+            "std::vector<Poco::Dynamic::Var, std::allocator<Poco::Dynamic::Var>>": "std::vector<Poco::Dynamic::Var>"
+        },
+        {
+            "std::vector<bool, std::allocator<bool>>": "std::vector<bool>"
+        },
+        {
+            "std::vector<char*, std::allocator<char*>>": "std::vector<char*>"
+        },
+        {
+            "std::vector<char, std::allocator<char>>": "std::vector<char>"
+        },
+        {
+            "std::vector<int, std::allocator<int>>": "std::vector<int>"
+        },
+        {
+            "std::vector<long long, std::allocator<long long>>": "std::vector<long long>"
+        },
+        {
+            "std::vector<long, std::allocator<long>>": "std::vector<long>"
+        },
+        {
+            "std::vector<std::pair<std::string, std::string>, std::allocator<std::pair<std::string, std::string>>>": "std::vector<std::pair<std::string, std::string>>"
+        },
+        {
+            "std::vector<std::string, std::allocator<std::string>>": "std::vector<std::string>"
+        },
+        {
+            "std::vector<unsigned char*, std::allocator<unsigned char*>>": "std::vector<unsigned char*>"
+        },
+        {
+            "std::vector<unsigned char, std::allocator<unsigned char>>": "std::vector<unsigned char>"
+        },
+        {
+            "std::deque<std::string, std::allocator<std::string>>": "std::deque<std::string>"
+        },
+        {
+            "tsl::ordered_map<std::string, Poco::Dynamic::Var, std::hash<std::string>, std::equal_to<std::string>, std::allocator<std::pair<std::string, Poco::Dynamic::Var>>, std::deque<std::pair<std::string, Poco::Dynamic::Var>, std::allocator<std::pair<std::string, Poco::Dynamic::Var>>>>": "Poco::OrderedMap<std::string, Poco::Dynamic::Var>"
+        },
+        {
+            "tsl::ordered_map<int, Poco::Dynamic::Var, std::hash<int>, std::equal_to<int>, std::allocator<std::pair<int, Poco::Dynamic::Var>>, std::deque<std::pair<int, Poco::Dynamic::Var>, std::allocator<std::pair<int, Poco::Dynamic::Var>>>>": "Poco::OrderedMap<int, Poco::Dynamic::Var>"
+        },
+        {
+            "std::vector<unsigned int, std::allocator<unsigned int>>": "std::vector<unsigned int>"
+        },
+        {
+            "std::map<std::string, Poco::DirectoryWatcherStrategy::ItemInfo, std::less<std::string>, std::allocator<std::pair<std::string const, Poco::DirectoryWatcherStrategy::ItemInfo>>>": "std::map<std::string, Poco::DirectoryWatcherStrategy::ItemInfo>"
+        },
+        {
+            "std::set<std::string, std::less<std::string>, std::allocator<std::string>>": "std::set<std::string>"
+        },
+        {
+            "std::basic_string_view<char, std::char_traits<char>>": "std::string_view"
+        },
+        {
+            "Poco::SharedPtr<Poco::Crypto::CryptoTransform, Poco::ReferenceCounter, Poco::ReleasePolicy<Poco::Crypto::CryptoTransform>>": "Poco::SharedPtr<Poco::Crypto::CryptoTransform>"
+        },
+        {
+            "std::vector<Poco::Crypto::X509Certificate, std::allocator<Poco::Crypto::X509Certificate>>": "std::vector<Poco::Crypto::X509Certificate>"
+        },
+        {
+            "std::vector<std::vector<unsigned char>, std::allocator<std::vector<unsigned char>>>": "std::vector<std::vector<unsigned char>>"
+        },
+        {
+            "std::basic_string<unsigned short, Poco::UTF16CharTraits, std::allocator<unsigned short>>": "Poco::UTF16String"
+        },
+        {
+            "Poco::LinearHashTable<Poco::HashMapEntry<std::string, Poco::Any>, Poco::HashMapEntryHash<Poco::HashMapEntry<std::string, Poco::Any>, Poco::Hash<std::string>>>": "Poco::HashMap<std::string, Poco::Any>"
+        },
+        {
+            "Poco::LinearHashTable<Poco::HashMapEntry<std::string, bool>, Poco::HashMapEntryHash<Poco::HashMapEntry<std::string, bool>, Poco::Hash<std::string>>>": "Poco::HashMap<std::string, bool>"
+        },
+        {
+            "Poco::SharedPtr<Poco::TextEncoding, Poco::ReferenceCounter, Poco::ReleasePolicy<Poco::TextEncoding>>": "Poco::SharedPtr<Poco::TextEncoding>"
+        },
+        {
+            "std::list<Poco::AutoPtr<Poco::Data::PooledSessionHolder>, std::allocator<Poco::AutoPtr<Poco::Data::PooledSessionHolder>>>": "std::list<Poco::AutoPtr<Poco::Data::PooledSessionHolder>>"
+        }
+    ]
+}
