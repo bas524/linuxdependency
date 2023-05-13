@@ -36,7 +36,7 @@ jobs:
           MAKEFLAGS: "-j2"
       - name: get-version
         id: get-version
-        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+        run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
@@ -89,7 +89,7 @@ jobs:
           MAKEFLAGS: "-j2"
       - name: get-version
         id: get-version
-        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+        run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
@@ -140,7 +140,7 @@ jobs:
           MAKEFLAGS: "-j2"
       - name: get-version
         id: get-version
-        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+        run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
@@ -191,7 +191,7 @@ jobs:
           MAKEFLAGS: "-j2"
       - name: get-version
         id: get-version
-        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+        run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
@@ -248,7 +248,7 @@ jobs:
           MAKEFLAGS: "-j2"
       - name: get-version
         id: get-version
-        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+        run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
@@ -299,7 +299,7 @@ jobs:
           MAKEFLAGS: "-j2"
       - name: get-version
         id: get-version
-        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+        run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
@@ -340,7 +340,7 @@ jobs:
           MAKEFLAGS: "-j2"
       - name: get-version
         id: get-version
-        run: echo "prj_ver=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+        run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DragNDrop && cd ..
       - uses: actions/upload-artifact@v3

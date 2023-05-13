@@ -3,7 +3,7 @@ moc_*.cpp
 ui_*.h
 qrc_*.cpp
 *.pro.user
-VERSION
+VERSION.txt
 /Makefile
 /Qldd
 *.qmake.stash
