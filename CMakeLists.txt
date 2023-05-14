@@ -2,7 +2,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/cmake/modules")
 cmake_minimum_required(VERSION 3.5)
 
 set(MAJOR "1")
-set(MINOR "1")
+set(MINOR "2")
 set(PATCH "1")
 cmake_policy(SET CMP0048 NEW)
 
@@ -15,6 +15,7 @@ find_package(VersionHeader)
 set(PROJECT_VERSION "${MAJOR}.${MINOR}.${PATCH}.${COMMITTER_SHORTSHA}")
 file(WRITE ${CMAKE_SOURCE_DIR}/VERSION.txt "${MAJOR}.${MINOR}.${PATCH}")
 find_package(ConfigPath)
+configure_file(${CMAKE_SOURCE_DIR}/resources/qldd.desktop.in ${CMAKE_BINARY_DIR}/resources/qldd.desktop @ONLY)
 
 function(get_linux_lsb_release_information)
     find_program(LSB_RELEASE_EXEC lsb_release)
@@ -160,7 +161,7 @@ else()
     install(TARGETS Qldd RUNTIME DESTINATION bin
                          BUNDLE DESTINATION bin
                          COMPONENT application)
-    install(FILES ${CMAKE_SOURCE_DIR}/resources/qldd.desktop DESTINATION share/applications/ COMPONENT application)
+    install(FILES ${CMAKE_BINARY_DIR}/resources/qldd.desktop DESTINATION share/applications/ COMPONENT application)
     install(FILES ${CMAKE_SOURCE_DIR}/resources/Qldd.png DESTINATION share/pixmaps/ COMPONENT application)
     install(FILES ${CMAKE_SOURCE_DIR}/nemo/actions/dependency-viewer.nemo_action
             DESTINATION share/nemo/actions

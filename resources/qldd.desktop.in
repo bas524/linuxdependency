@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Version=1.1.1
+Version=@MAJOR@.@MINOR@.@PATCH@
 Name=DependencyViewer
 GenericName=DependencyViewer
 Comment=DependencyViewer for libraries and executable
