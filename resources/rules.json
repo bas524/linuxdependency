@@ -7,28 +7,22 @@
             ":__cxx11:": ""
         },
         {
-            "__gnu_cxx::__normal_iterator<char const*, std::string >": "std::string::const_iterator"
-        },
-        {
-            "std::__wrap_iter<char const*>": "std::string::const_iterator"
-        },
-        {
-            "std::basic_istream<char, std::char_traits<char> >": "std::istream"
+            " >": ">"
         },
         {
             "std::basic_istream<char, std::char_traits<char>>": "std::istream"
         },
         {
-            "std::basic_ostream<char, std::char_traits<char> >": "std::ostream"
-        },
-        {
             "std::basic_ostream<char, std::char_traits<char>>": "std::ostream"
         },
         {
-            "std::basic_string<char, std::char_traits<char>, std::allocator<char> >": "std::string"
+            "std::basic_string<char, std::char_traits<char>, std::allocator<char>>": "std::string"
         },
         {
-            "std::basic_string<char, std::char_traits<char>, std::allocator<char>>": "std::string"
+            "__gnu_cxx::__normal_iterator<char const*, std::string>": "std::string::const_iterator"
+        },
+        {
+            "std::__wrap_iter<char const*>": "std::string::const_iterator"
         },
         {
             "std::vector<Poco::Any, std::allocator<Poco::Any>>": "std::vector<Poco::Any>"
