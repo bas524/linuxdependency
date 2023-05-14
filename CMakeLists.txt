@@ -13,6 +13,8 @@ project(Qldd
 
 find_package(VersionHeader)
 set(PROJECT_VERSION "${MAJOR}.${MINOR}.${PATCH}.${COMMITTER_SHORTSHA}")
+file(WRITE ${CMAKE_SOURCE_DIR}/VERSION.txt "${MAJOR}.${MINOR}.${PATCH}")
+find_package(ConfigPath)
 
 function(get_linux_lsb_release_information)
     find_program(LSB_RELEASE_EXEC lsb_release)
@@ -74,10 +76,14 @@ set(SOURCES
     finfdialog.cpp
     finfdialog.h
     finfdialog.ui
+    demanglerules.h
+    demanglerules.cpp
+    demanglerules.ui
+    customtypes.h
     resources/resources.qrc
     )
 target_sources(Qldd PRIVATE ${SOURCES})
-target_compile_definitions(Qldd PRIVATE -DPROJECT_VERSION="${PROJECT_VERSION}")
+target_compile_definitions(Qldd PRIVATE -DPROJECT_VERSION="${PROJECT_VERSION}" -DQ_COMPILER_INITIALIZER_LISTS)
 target_link_libraries(Qldd PRIVATE ${QtVer}::Widgets)
 
 set(CPACK_SOURCE_IGNORE_FILES
@@ -115,6 +121,11 @@ set(CPACK_SOURCE_IGNORE_FILES
 if(APPLE)
     set(CMAKE_MACOSX_BUNDLE ON)
     set(CMAKE_MACOSX_RPATH ON)
+    set(CPACK_DMG_BACKGROUND_IMAGE
+          "${CMAKE_SOURCE_DIR}/resources/CMakeDMGBackground.tif")
+      set(CPACK_DMG_DS_STORE_SETUP_SCRIPT
+          "${CMAKE_SOURCE_DIR}/resources/CMakeDMGSetup.scpt")
+
     install(TARGETS Qldd
             BUNDLE DESTINATION .
             RUNTIME DESTINATION .)
@@ -129,7 +140,7 @@ if(APPLE)
                           MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
                           MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
                           MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-                          MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2020 bas524@yandex.ru"
+                          MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2023 bas524@yandex.ru"
                           )
     if (${QtVer} STREQUAL Qt5)
       add_custom_command(TARGET Qldd

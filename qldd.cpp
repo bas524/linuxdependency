@@ -42,8 +42,12 @@ void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
   } while (!line.isNull());
 }
 
-QLdd::QLdd(QString fileName, QString lddDirPath)
-    : _fileName(std::move(fileName)), _fileInfo(_fileName), _link(false), _lddDirPath(std::move(lddDirPath)) {
+QLdd::QLdd(QString fileName, QString lddDirPath, RulesMap demangleRules)
+    : _fileName(std::move(fileName)),
+      _fileInfo(_fileName),
+      _link(false),
+      _lddDirPath(std::move(lddDirPath)),
+      _demangleRules(std::move(demangleRules)) {
   _ownerMod.read = _fileInfo.permission(QFile::ReadOwner);
   _ownerMod.write = _fileInfo.permission(QFile::WriteOwner);
   _ownerMod.execute = _fileInfo.permission(QFile::ExeOwner);
@@ -159,22 +163,16 @@ void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
   int status = 0;
   std::stringstream ss;
   ss << NM << " " << _fileName.toStdString() << " | grep \\ T\\ ";
-
-  execAndDoOnEveryLine(ss.str(), [&status, &listWidget, &filter](const QString &line) {
+  execAndDoOnEveryLine(ss.str(), [&status, &listWidget, &filter, this](const QString &line) {
     QStringList info = line.split(" ");
     QString demangled(info.at(2));
     char *realname = abi::__cxa_demangle(info.at(2).toStdString().c_str(), nullptr, nullptr, &status);
     if (realname) {
       demangled = QString::fromLocal8Bit(realname);
       ::free(realname);
-      demangled.replace(":__1:", "");
-      demangled.replace(":__cxx11:", "");
-      demangled.replace("std::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string");
-      demangled.replace("__gnu_cxx::__normal_iterator<char const*, std::string >", "std::string::const_iterator");
-      demangled.replace("std::__wrap_iter<char const*>", "std::string::const_iterator");
-      demangled.replace("std::basic_istream<char, std::char_traits<char> >", "std::istream");
-      demangled.replace("std::basic_ostream<char, std::char_traits<char> >", "std::ostream");
-      demangled.replace("std::basic_string<char, std::char_traits<char>, std::allocator<char>>", "std::string");
+      for (auto item = _demangleRules.begin(); item != _demangleRules.end(); ++item) {
+        demangled.replace(item->first, item->second);
+      }
     }
     std::unique_ptr<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
     item->setToolTip(demangled);

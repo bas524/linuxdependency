@@ -6,12 +6,20 @@
 #include <QMessageBox>
 #include <QClipboard>
 #include <QFontDatabase>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
+#include <QDir>
 #include "finfdialog.h"
 #include "version.h"
+#include "config.h"
+#include "demanglerules.h"
 
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
+      _fileName(fileName),
       qldd(nullptr),
       shortcutClose(nullptr),
       fileMenu(nullptr),
@@ -40,13 +48,15 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
   createActions();
   createMenus();
 
-  if (!fileName.isEmpty()) {
-    reset(fileName);
+  if (!_fileName.isEmpty()) {
+    reset();
   } else {
     QTreeWidgetItem *header = ui->treeWidget->headerItem();
     header->setText(0, "Dependency");
   }
   ui->tabWidget->setCurrentIndex(0);
+
+  initDemangleRules();
 }
 
 MainWindow::~MainWindow() {
@@ -61,46 +71,76 @@ void MainWindow::fillExportTable(const QString &filter) {
   }
 }
 
-void MainWindow::reset(const QString &fileName) {
-  qldd.reset(new QLdd(fileName, qApp->applicationDirPath()));
-  QTreeWidgetItem *header = ui->treeWidget->headerItem();
-  header->setText(0, "Dependency");
-  qldd->fillDependency(*ui->treeWidget);
-  fillExportTable("");
+const RulesMap &MainWindow::demangleRules() const { return _demangleRules; }
 
-  ui->lineEditFileName->setText(qldd->getBinaryName());
-  ui->lineEditFileSize->setText(qldd->getStringFileSize() + "( " + QString::number(qldd->getFileSize()) + " bytes )");
-  ui->lineEditTimeAccess->setText(qldd->getAccessTime());
-  ui->lineEditTimeStatus->setText(qldd->getCreatedTime());
-  ui->lineEditTimeModify->setText(qldd->getModifyTime());
+void MainWindow::reset() {
+  if (!_fileName.isEmpty()) {
+    qldd.reset(new QLdd(_fileName, qApp->applicationDirPath(), _demangleRules));
+    QTreeWidgetItem *header = ui->treeWidget->headerItem();
+    header->setText(0, "Dependency");
+    qldd->fillDependency(*ui->treeWidget);
+    fillExportTable("");
 
-  ui->lineEditOwner->setText(qldd->getOwnerName());
-  ui->lineEditGroup->setText(qldd->getGroupName());
+    ui->lineEditFileName->setText(qldd->getBinaryName());
+    ui->lineEditFileSize->setText(qldd->getStringFileSize() + "( " + QString::number(qldd->getFileSize()) + " bytes )");
+    ui->lineEditTimeAccess->setText(qldd->getAccessTime());
+    ui->lineEditTimeStatus->setText(qldd->getCreatedTime());
+    ui->lineEditTimeModify->setText(qldd->getModifyTime());
 
-  ui->textEditInformation->setText(qldd->getInfo());
+    ui->lineEditOwner->setText(qldd->getOwnerName());
+    ui->lineEditGroup->setText(qldd->getGroupName());
 
-  QMOD owner = qldd->getOwnerMod();
-  QMOD group = qldd->getGroupMod();
-  QMOD other = qldd->getOtherMod();
+    ui->textEditInformation->setText(qldd->getInfo());
 
-  ui->checkBoxOwnerRead->setChecked(owner.read);
-  ui->checkBoxOwnerWrite->setChecked(owner.write);
-  ui->checkBoxOwnerExec->setChecked(owner.execute);
+    QMOD owner = qldd->getOwnerMod();
+    QMOD group = qldd->getGroupMod();
+    QMOD other = qldd->getOtherMod();
 
-  ui->checkBoxGroupRead->setChecked(group.read);
-  ui->checkBoxGroupWrite->setChecked(group.write);
-  ui->checkBoxGroupExec->setChecked(group.execute);
+    ui->checkBoxOwnerRead->setChecked(owner.read);
+    ui->checkBoxOwnerWrite->setChecked(owner.write);
+    ui->checkBoxOwnerExec->setChecked(owner.execute);
 
-  ui->checkBoxOtherRead->setChecked(other.read);
-  ui->checkBoxOtherWrite->setChecked(other.write);
-  ui->checkBoxOtherExec->setChecked(other.execute);
+    ui->checkBoxGroupRead->setChecked(group.read);
+    ui->checkBoxGroupWrite->setChecked(group.write);
+    ui->checkBoxGroupExec->setChecked(group.execute);
+
+    ui->checkBoxOtherRead->setChecked(other.read);
+    ui->checkBoxOtherWrite->setChecked(other.write);
+    ui->checkBoxOtherExec->setChecked(other.execute);
+  }
+}
+
+QFont MainWindow::getFixedFont() const { return fixedFont; }
+
+void MainWindow::saveDemangleRules(const RulesMap &rules) {
+  QDir d(QDir::home());
+  if (!d.exists(DEMANGLE_RULES_DEFAULT_PATH)) {
+    if (!d.mkdir(DEMANGLE_RULES_DEFAULT_PATH)) {
+      QMessageBox::critical(this, "Demangle rules", "Can't createdirectory " + d.homePath() + DEMANGLE_RULES_DEFAULT_PATH);
+    }
+  }
+
+  QString path = d.homePath() + "/" + DEMANGLE_RULES_DEFAULT_PATH + "/rules.json";
+  QFile relesFile(path);
+  if (relesFile.open(QFile::OpenModeFlag::ReadWrite | QFile::OpenModeFlag::Truncate | QFile::OpenModeFlag::Text)) {
+    QJsonDocument doc;
+    QJsonObject obj;
+    QJsonArray arrRules;
+    for (auto item = rules.begin(); item != rules.end(); ++item) {
+      QJsonObject r;
+      r[item->first] = item->second;
+      arrRules.append(r);
+    }
+    obj["rules"] = arrRules;
+    doc.setObject(obj);
+    relesFile.write(doc.toJson());
+    relesFile.close();
+  }
 }
 
 void MainWindow::open() {
-  QString fileName = QFileDialog::getOpenFileName(this);
-  if (!fileName.isEmpty()) {
-    reset(fileName);
-  }
+  _fileName = QFileDialog::getOpenFileName(this);
+  reset();
 }
 
 void MainWindow::about() {
@@ -165,6 +205,30 @@ void MainWindow::createMenus() {
   connect(ui->listWidgetExportTable, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 
+void MainWindow::initDemangleRules() {
+  QDir d(QDir::home());
+  QString path = d.homePath() + "/" + DEMANGLE_RULES_DEFAULT_PATH + "/rules.json";
+  QFile relesFile(path);
+  if (!relesFile.exists()) {
+    QFile::copy(":/rules.json", path);
+  }
+  _demangleRules.clear();
+  if (relesFile.open(QFile::OpenModeFlag::ReadWrite | QFile::OpenModeFlag::Text)) {
+    QString val = relesFile.readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
+    QJsonObject obj = doc.object();
+    QJsonArray arrRules = obj["rules"].toArray();
+    for (const auto &item : qAsConst(arrRules)) {
+      auto itemObj = item.toObject();
+      auto itemKeys = itemObj.keys();
+      if (itemKeys.size() == 1) {
+        auto key = itemKeys.first();
+        _demangleRules.push_back({key, itemObj[key].toString()});
+      }
+    }
+  }
+}
+
 void MainWindow::showContextMenu(const QPoint &pos) {
   // Handle global position
   QPoint globalPos = ui->listWidgetExportTable->mapToGlobal(pos);
@@ -206,3 +270,8 @@ void MainWindow::on_checkBoxOtherExec_clicked(bool checked) { ui->checkBoxOtherE
 void MainWindow::on_filterButton_clicked() { find(); }
 
 void MainWindow::on_resetButton_clicked() { myClose(); }
+
+void MainWindow::on_rulesButton_clicked() {
+  auto dr = new demanglerules(this);
+  dr->show();
+}
