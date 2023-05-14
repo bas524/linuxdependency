@@ -47,7 +47,7 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
 
   createActions();
   createMenus();
-
+  initDemangleRules();
   if (!_fileName.isEmpty()) {
     reset();
   } else {
@@ -55,8 +55,6 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     header->setText(0, "Dependency");
   }
   ui->tabWidget->setCurrentIndex(0);
-
-  initDemangleRules();
 }
 
 MainWindow::~MainWindow() {
@@ -214,8 +212,9 @@ void MainWindow::initDemangleRules() {
     QFile::copy(":/rules.json", path);
     relesFile.setPermissions(QFile::ReadUser | QFile::WriteUser);
   }
-  _demangleRules.clear();
+
   if (relesFile.open(QFile::OpenModeFlag::ReadOnly | QFile::OpenModeFlag::Text)) {
+    _demangleRules.clear();
     QString val = relesFile.readAll();
     QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
     QJsonObject obj = doc.object();
