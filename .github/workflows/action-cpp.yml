@@ -1,6 +1,46 @@
 name: build and cpack
 on: [ push, pull_request ]
 jobs:
+#  ubuntu-latest-nonx86:
+#    runs-on: ubuntu-latest
+#    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+#    strategy:
+#      matrix:
+#        include:
+#          - arch: aarch64
+#            distro: ubuntu_latest
+#          - arch: ppc64le
+#            distro: ubuntu_latest
+#          - arch: s390x
+#            distro: ubuntu_latest
+#          - arch: riscv64
+#            distro: ubuntu_latest
+#    steps:
+#      - name: Get current date
+#        id: date
+#        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+#      - name: Get commit sha
+#        id: git_sha
+#        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+#      - uses: actions/checkout@v3
+#      - uses: uraimo/run-on-arch-action@v2
+#        name: Run commands
+#        id: configure-and-build
+#        with:
+#          arch: ${{ matrix.arch }}
+#          distro: ${{ matrix.distro }}
+#          setup: |
+#            mkdir -p "${PWD}/artifacts"
+#          dockerRunArgs: |
+#            --volume "${PWD}/artifacts:/artifacts"
+#          shell: /bin/bash
+#          install: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
+#          run: |
+#            mkdir cmake-build-release &&
+#            cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H. &&
+#            cmake --build cmake-build-release/ --target all
+
+
   ubuntu-22-04:
     runs-on: ubuntu-latest
     strategy:
@@ -27,7 +67,7 @@ jobs:
         run: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
       # build project
       - name: mkdir
-        run: ls -l && mkdir cmake-build-release
+        run: mkdir cmake-build-release
       - name: cmake cmake-build-release
         run: cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
       - name: cmake make
