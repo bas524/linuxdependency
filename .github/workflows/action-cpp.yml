@@ -35,6 +35,8 @@ jobs:
             mkdir -p "${PWD}/artifacts"
           dockerRunArgs: |
             --volume "${PWD}/artifacts:/artifacts"
+          env: |
+            ARCH: ${{ matrix.arch }}
           shell: /bin/bash
           install: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
           run: |
@@ -44,7 +46,7 @@ jobs:
             cd cmake-build-release && cpack -G DEB && cd .. &&
             cp ./VERSION.txt /artifacts &&
             export PKG_VER=$(cat ./VERSION.txt) &&
-            cp ./cmake-build-release/Qldd-$PKG_VER.deb /artifacts
+            cp ./cmake-build-release/Qldd-${PKG_VER}-${ARCH}.deb /artifacts
       - name: get-version
         id: get-version
         run: echo "prj_ver=$(cat ${PWD}/artifacts/VERSION.txt)" >> $GITHUB_OUTPUT
