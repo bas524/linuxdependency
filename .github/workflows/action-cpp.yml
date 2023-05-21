@@ -42,7 +42,7 @@ jobs:
             cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H. &&
             cmake --build cmake-build-release/ --target all &&
             cd cmake-build-release && cpack -G DEB && cd .. &&
-            cp ./VERSION.txt /  /artifacts/VERSION.txt &&
+            cp ./VERSION.txt /artifacts &&
             export PKG_VER=$(cat ./VERSION.txt) &&
             cp ./cmake-build-release/Qldd-$PKG_VER.deb /artifacts
       - name: get-version
