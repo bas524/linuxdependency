@@ -22,6 +22,9 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      - name: Set artifacts dir
+        id: artifacts
+        run: echo "artifacts=$(echo $PWD/artifacts)" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v3
       - uses: uraimo/run-on-arch-action@v2
         name: Run commands
@@ -55,7 +58,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ format('Qldd-{0}.{1}-{2}', steps.get-version.outputs.prj_ver, matrix.distro, matrix.arch) }}
-          path: ${PWD}/artifacts/${{ format('Qldd-{0}-{1}.deb', steps.get-version.outputs.prj_ver, matrix.arch) }}
+          path: ${{ format('{0}/Qldd-{1}-{2}.deb', steps.artifacts.outputs.artifacts ,steps.get-version.outputs.prj_ver, matrix.arch) }}
+          if-no-files-found: error
 
   ubuntu-22-04:
     runs-on: ubuntu-latest
