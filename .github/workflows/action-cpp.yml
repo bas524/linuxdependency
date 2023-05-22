@@ -15,6 +15,14 @@ jobs:
             distro: ubuntu_latest
           - arch: riscv64
             distro: ubuntu_latest
+          - arch: aarch64
+            distro: fedora_latest
+          - arch: ppc64le
+            distro: fedora_latest
+          - arch: s390x
+            distro: fedora_latest
+          - arch: riscv64
+            distro: fedora_latest
     steps:
       - name: Get current date
         id: date
@@ -65,8 +73,7 @@ jobs:
             cd cmake-build-release && cpack -G ${PKG_FORMAT} && cd .. &&
             cp ./VERSION.txt /artifacts &&
             export PKG_VER=$(cat ./VERSION.txt) &&
-            cp ./cmake-build-release/Qldd-${PKG_VER}-${ARCH}.* /artifacts &&
-            ls -l /artifacts
+            cp ./cmake-build-release/Qldd-${PKG_VER}-${ARCH}.* /artifacts
       - name: get-version
         id: get-version
         run: echo "prj_ver=$(cat ${PWD}/artifacts/VERSION.txt)" >> $GITHUB_OUTPUT
