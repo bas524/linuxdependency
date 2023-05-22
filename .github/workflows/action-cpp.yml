@@ -46,7 +46,8 @@ jobs:
             cd cmake-build-release && cpack -G DEB && cd .. &&
             cp ./VERSION.txt /artifacts &&
             export PKG_VER=$(cat ./VERSION.txt) &&
-            cp ./cmake-build-release/Qldd-${PKG_VER}-${ARCH}.deb /artifacts
+            cp ./cmake-build-release/Qldd-${PKG_VER}-${ARCH}.deb /artifacts &&
+            ls -l /artifacts
       - name: get-version
         id: get-version
         run: echo "prj_ver=$(cat ${PWD}/artifacts/VERSION.txt)" >> $GITHUB_OUTPUT
@@ -54,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ format('Qldd-{0}.{1}-{2}', steps.get-version.outputs.prj_ver, matrix.distro, matrix.arch) }}
-          path: ${PWD}/artifacts/${{ format('Qldd-{0}-{1}.???', steps.get-version.outputs.prj_ver, matrix.arch) }}
+          path: ${PWD}/artifacts/${{ format('Qldd-{0}-{1}.deb', steps.get-version.outputs.prj_ver, matrix.arch) }}
 
   ubuntu-22-04:
     runs-on: ubuntu-latest
