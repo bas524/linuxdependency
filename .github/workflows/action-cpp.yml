@@ -61,7 +61,7 @@ jobs:
             cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H. &&
             cmake --build cmake-build-release/ --target all &&
             [[ "$(lsb_release -i -s)" == "Ubuntu" ]] && export CPACK_FORMAT=DEB || export CPACK_FORMAT=RPM &&
-            [[ "$(lsb_release -i -s)" == "Ubuntu" ]] && export PKG_FORMAT=DEB   || export PKG_FORMAT=rpm &&
+            [[ "$(lsb_release -i -s)" == "Ubuntu" ]] && export PKG_FORMAT=deb   || export PKG_FORMAT=rpm &&
             cd cmake-build-release && cpack -G ${CPACK_FORMAT} && cd .. &&
             cp ./VERSION.txt /artifacts &&
             export PKG_VER=$(cat ./VERSION.txt) &&
