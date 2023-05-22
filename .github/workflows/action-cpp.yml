@@ -47,24 +47,17 @@ jobs:
           dockerRunArgs: |
             --volume "${PWD}/artifacts:/artifacts"
           env: |
-            case "${{ matrix.distro }}" in
-              ubuntu*|jessie|stretch|buster|bullseye)
-                ARCH: ${{ matrix.arch }}
-                PKG_FORMAT: DEB
-                ;;
-              fedora*)
-                ARCH: ${{ matrix.arch }}
-                PKG_FORMAT: RPM
-                ;;
-            esac
+            ARCH: ${{ matrix.arch }}
           shell: /bin/bash
           install: |
             case "${{ matrix.distro }}" in
               ubuntu*|jessie|stretch|buster|bullseye)
                 apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
+                export PKG_FORMAT=DEB
                 ;;
               fedora*)
                 yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build redhat-lsb
+                export PKG_FORMAT=RPM
                 ;;
             esac
           run: |
