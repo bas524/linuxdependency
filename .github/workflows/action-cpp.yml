@@ -52,21 +52,24 @@ jobs:
               ubuntu*|jessie|stretch|buster|bullseye)
                 apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
                 echo DEB > ./CPACK_FORMAT.txt
+                echo deb > ./PKG_FORMAT.txt
                 ;;
               fedora*)
                 yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build redhat-lsb
                 echo RPM > ./CPACK_FORMAT.txt
+                echo rpm > ./PKG_FORMAT.txt
                 ;;
             esac
           run: |
             mkdir cmake-build-release &&
             cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H. &&
             cmake --build cmake-build-release/ --target all &&
-            export PKG_FORMAT=$(cat ./CPACK_FORMAT.txt) &&
-            cd cmake-build-release && cpack -G ${PKG_FORMAT} && cd .. &&
+            export CPACK_FORMAT=$(cat ./CPACK_FORMAT.txt) &&
+            export PKG_FORMAT=$(cat ./PKG_FORMAT.txt) &&
+            cd cmake-build-release && cpack -G ${CPACK_FORMAT} && cd .. &&
             cp ./VERSION.txt /artifacts &&
             export PKG_VER=$(cat ./VERSION.txt) &&
-            cp ./cmake-build-release/Qldd-${PKG_VER}-${ARCH}.* /artifacts
+            cp ./cmake-build-release/Qldd-${PKG_VER}-${ARCH}.${PKG_FORMAT} /artifacts
       - name: get-version
         id: get-version
         run: echo "prj_ver=$(cat ${PWD}/artifacts/VERSION.txt)" >> $GITHUB_OUTPUT
