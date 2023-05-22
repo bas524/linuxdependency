@@ -60,7 +60,65 @@ jobs:
           name: ${{ format('Qldd-{0}.{1}-{2}', steps.get-version.outputs.prj_ver, matrix.distro, matrix.arch) }}
           path: ${{ format('{0}/Qldd-{1}-{2}.deb', steps.artifacts.outputs.artifacts ,steps.get-version.outputs.prj_ver, matrix.arch) }}
           if-no-files-found: error
-
+  fedora-latest-nonx86:
+    runs-on: fedora-latest
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: fedora_latest
+          - arch: ppc64le
+            distro: fedora_latest
+          - arch: s390x
+            distro: fedora_latest
+          - arch: riscv64
+            distro: fedora_latest
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      - name: Get commit sha
+        id: git_sha
+        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      - name: Set artifacts dir
+        id: artifacts
+        run: echo "artifacts=$(echo $PWD/artifacts)" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      - uses: uraimo/run-on-arch-action@v2
+        name: Run commands
+        id: configure-and-build
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+          # Not required, but speeds up builds
+          githubToken: ${{ github.token }}
+          setup: |
+            mkdir -p "${PWD}/artifacts"
+          dockerRunArgs: |
+            --volume "${PWD}/artifacts:/artifacts"
+          env: |
+            ARCH: ${{ matrix.arch }}
+          shell: /bin/bash
+          install: yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build redhat-lsb
+          run: |
+            mkdir cmake-build-release &&
+            cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H. &&
+            cmake --build cmake-build-release/ --target all &&
+            cd cmake-build-release && cpack -G RPM && cd .. &&
+            cp ./VERSION.txt /artifacts &&
+            export PKG_VER=$(cat ./VERSION.txt) &&
+            cp ./cmake-build-release/Qldd-${PKG_VER}-${ARCH}.deb /artifacts &&
+            ls -l /artifacts
+      - name: get-version
+        id: get-version
+        run: echo "prj_ver=$(cat ${PWD}/artifacts/VERSION.txt)" >> $GITHUB_OUTPUT
+      - name: Upload Qldd binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ format('Qldd-{0}.{1}-{2}', steps.get-version.outputs.prj_ver, matrix.distro, matrix.arch) }}
+          path: ${{ format('{0}/Qldd-{1}-{2}.rpm', steps.artifacts.outputs.artifacts ,steps.get-version.outputs.prj_ver, matrix.arch) }}
+          if-no-files-found: error
   ubuntu-22-04:
     runs-on: ubuntu-latest
     strategy:
