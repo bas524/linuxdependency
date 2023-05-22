@@ -47,12 +47,13 @@ jobs:
           dockerRunArgs: |
             --volume "${PWD}/artifacts:/artifacts"
           env: |
-            ARCH: ${{ matrix.arch }}
             case "${{ matrix.distro }}" in
               ubuntu*|jessie|stretch|buster|bullseye)
+                ARCH: ${{ matrix.arch }}
                 PKG_FORMAT: DEB
                 ;;
               fedora*)
+                ARCH: ${{ matrix.arch }}
                 PKG_FORMAT: RPM
                 ;;
             esac
