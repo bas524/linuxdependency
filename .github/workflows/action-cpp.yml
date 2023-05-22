@@ -77,6 +77,7 @@ jobs:
           if-no-files-found: error
   ubuntu-22-04:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -128,6 +129,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   ubuntu-20-04:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -181,6 +183,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   debian-bullseye:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -232,6 +235,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   debian-buster:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -283,6 +287,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   centos-latest:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -340,6 +345,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   fedora-latest:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -391,6 +397,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   macos-clang-cmake:
     runs-on: macos-latest
+    name: Build on macos-latest x86_64
 
     steps:
       - name: Get current date
