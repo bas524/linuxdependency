@@ -1,8 +1,83 @@
 name: build and cpack
 on: [ push, pull_request ]
 jobs:
+  ubuntu-latest-nonx86:
+    runs-on: ubuntu-latest
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: ubuntu_latest
+          - arch: ppc64le
+            distro: ubuntu_latest
+          - arch: s390x
+            distro: ubuntu_latest
+          - arch: riscv64
+            distro: ubuntu_latest
+          - arch: aarch64
+            distro: fedora_latest
+          - arch: ppc64le
+            distro: fedora_latest
+          - arch: s390x
+            distro: fedora_latest
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      - name: Get commit sha
+        id: git_sha
+        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      - name: Set artifacts dir
+        id: artifacts
+        run: echo "artifacts=$(echo $PWD/artifacts)" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      - uses: uraimo/run-on-arch-action@v2
+        name: Run commands
+        id: configure-and-build
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+          # Not required, but speeds up builds
+          githubToken: ${{ github.token }}
+          setup: |
+            mkdir -p "${PWD}/artifacts"
+          dockerRunArgs: |
+            --volume "${PWD}/artifacts:/artifacts"
+          env: |
+            ARCH: ${{ matrix.arch }}
+          shell: /bin/bash
+          install: |
+            case "${{ matrix.distro }}" in
+              ubuntu*|jessie|stretch|buster|bullseye)
+                apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
+                ;;
+              fedora*)
+                yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build redhat-lsb
+                ;;
+            esac
+          run: |
+            mkdir cmake-build-release &&
+            cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H. &&
+            cmake --build cmake-build-release/ --target all &&
+            [[ "$(lsb_release -i -s)" == "Ubuntu" ]] && export CPACK_FORMAT=DEB || export CPACK_FORMAT=RPM &&
+            [[ "$(lsb_release -i -s)" == "Ubuntu" ]] && export PKG_FORMAT=deb   || export PKG_FORMAT=rpm &&
+            cd cmake-build-release && cpack -G ${CPACK_FORMAT} && cd .. &&
+            cp ./VERSION.txt /artifacts &&
+            export PKG_VER=$(cat ./VERSION.txt) &&
+            cp ./cmake-build-release/Qldd-${PKG_VER}-${ARCH}.${PKG_FORMAT} /artifacts
+      - name: get-version
+        id: get-version
+        run: echo "prj_ver=$(cat ${PWD}/artifacts/VERSION.txt)" >> $GITHUB_OUTPUT
+      - name: Upload Qldd binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ format('Qldd-{0}.{1}-{2}', steps.get-version.outputs.prj_ver, matrix.distro, matrix.arch) }}
+          path: ${{ format('{0}/Qldd-{1}-{2}.???', steps.artifacts.outputs.artifacts ,steps.get-version.outputs.prj_ver, matrix.arch) }}
+          if-no-files-found: error
   ubuntu-22-04:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -27,7 +102,7 @@ jobs:
         run: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
       # build project
       - name: mkdir
-        run: ls -l && mkdir cmake-build-release
+        run: mkdir cmake-build-release
       - name: cmake cmake-build-release
         run: cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
       - name: cmake make
@@ -54,6 +129,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   ubuntu-20-04:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -107,6 +183,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   debian-bullseye:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -158,6 +235,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   debian-buster:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -209,6 +287,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   centos-latest:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -266,6 +345,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   fedora-latest:
     runs-on: ubuntu-latest
+    name: Build on ${{ matrix.container }} x86_64
     strategy:
       #
       # matrix for containers
@@ -317,6 +397,7 @@ jobs:
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   macos-clang-cmake:
     runs-on: macos-latest
+    name: Build on macos-latest x86_64
 
     steps:
       - name: Get current date
