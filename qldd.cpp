@@ -17,10 +17,12 @@
 #define CMD_LDD "otool -L"
 #define NM "nm -g"
 #define DEPEND_SPLITTER ":"
+#define INFO_SPLITTER "\n"
 #else
 #define CMD_LDD "ldd"
 #define NM "nm -D"
 #define DEPEND_SPLITTER "=>"
+#define INFO_SPLITTER ","
 #endif
 
 QLdd::QLdd(QString fileName, QString lddDirPath, RulesMap demangleRules)
@@ -178,11 +180,7 @@ QString QLdd::getInfo() {
   ss << "file \"" << _fileName.toStdString() << "\"";
   QString buf;
   execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) { buf.append(line + "\n"); });
-#ifdef __APPLE__
-  QStringList slTmp = buf.split("\n");
-#else
-  QStringList slTmp = buf.split(",");
-#endif
+  QStringList slTmp = buf.split(INFO_SPLITTER);
   buf.clear();
   for (const QString &v : qAsConst(slTmp)) {
     buf.append(v.trimmed()).append("\n");
