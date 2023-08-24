@@ -11,6 +11,7 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QDir>
+#include <QDebug>
 #include <cxxabi.h>
 
 #ifdef __APPLE__
@@ -155,6 +156,9 @@ void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
       ::free(realname);
       for (auto item = _demangleRules.begin(); item != _demangleRules.end(); ++item) {
         demangled.replace(item->first, item->second);
+        if (demangled.contains("string")) {
+          qDebug() << "from->" << item->first << " to->" << item->second;
+        }
       }
     }
     std::unique_ptr<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));

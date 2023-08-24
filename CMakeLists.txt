@@ -10,6 +10,7 @@ project(Qldd
     LANGUAGES CXX
     VERSION ${MAJOR}.${MINOR}.${PATCH})
 
+option(FORCE_QT6 "Enable Qt6 usage force [OFF: default]" ON)
 
 find_package(VersionHeader)
 set(PROJECT_VERSION "${MAJOR}.${MINOR}.${PATCH}.${COMMITTER_SHORTSHA}")
@@ -53,13 +54,17 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (FORCE_QT6)
+    set(QtVer Qt6)
+    find_package(${QtVer} COMPONENTS Widgets REQUIRED)
+else()
 set(QtVer Qt5)
-find_package(${QtVer} COMPONENTS Widgets QUIET)
-if (NOT Qt5_FOUND)
-  set(QtVer Qt6)
-  find_package(${QtVer} COMPONENTS Widgets REQUIRED)
-endif ()
-
+    find_package(${QtVer} COMPONENTS Widgets QUIET)
+    if (NOT Qt5_FOUND)
+        set(QtVer Qt6)
+        find_package(${QtVer} COMPONENTS Widgets REQUIRED)
+    endif ()
+endif()
 if (APPLE)
   set(APP_ICNS "${CMAKE_SOURCE_DIR}/resources/Qldd.icns")
   add_executable(Qldd MACOSX_BUNDLE ${APP_ICNS})
