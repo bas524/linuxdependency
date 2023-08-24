@@ -11,15 +11,17 @@
 #include <QJsonArray>
 #include <QFile>
 #include <QDir>
+#include <utility>
 #include "finfdialog.h"
 #include "version.h"
 #include "config.h"
 #include "demanglerules.h"
+#include <sstream>
 
-MainWindow::MainWindow(const QString &fileName, QWidget *parent)
+MainWindow::MainWindow(QString fileName, QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      _fileName(fileName),
+      _fileName(std::move(fileName)),
       qldd(nullptr),
       shortcutClose(nullptr),
       fileMenu(nullptr),
@@ -138,6 +140,24 @@ void MainWindow::saveDemangleRules(const RulesMap &rules) {
 
 void MainWindow::open() {
   _fileName = QFileDialog::getOpenFileName(this);
+#ifdef __APPLE__
+  if (_fileName.contains(".app") && QDir(_fileName).exists()) {
+    QString infoPlist = _fileName;
+    infoPlist.append("/Contents/Info.plist");
+    std::stringstream ss;
+    ss << "plutil -extract CFBundleExecutable raw "
+       << " \"" << infoPlist.toStdString() << "\"";
+    QString execBaseName;
+    execAndDoOnEveryLine(ss.str(), [this, &execBaseName](const QString &line) {
+      if (!line.isEmpty()) {
+        execBaseName = line;
+      }
+    });
+    if (!execBaseName.isEmpty()) {
+      _fileName.append("/Contents/MacOS/").append(execBaseName);
+    }
+  }
+#endif
   reset();
 }
 

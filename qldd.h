@@ -6,6 +6,7 @@
 #include <QListWidget>
 #include <QFileInfo>
 #include <QFont>
+#include <QTextStream>
 #include "customtypes.h"
 
 struct QMOD {
@@ -17,6 +18,10 @@ struct QMOD {
 class QLdd {
  public:
   QLdd(QString fileName, QString lddDirPath, RulesMap demangleRules);
+  QLdd(const QLdd &) = delete;
+  QLdd(QLdd &&) = delete;
+  QLdd operator=(const QLdd &) = delete;
+  QLdd operator=(QLdd &&) = delete;
   virtual ~QLdd();
 
   int64_t getFileSize() const;
@@ -67,5 +72,24 @@ class QLdd {
   RulesMap _demangleRules;
   QString getHumanReadableDataSize() const;
 };
+
+template <typename Action>
+void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
+  std::unique_ptr<FILE, std::function<int(FILE *)>> stream(popen(execString.c_str(), "r"), pclose);
+  
+  QTextStream nmOutStream(stream.get());
+  QString line;
+  do {
+	line = nmOutStream.readLine();
+	if (line.isNull()) {
+	  break;
+	}
+	line = line.trimmed();
+	if (line.isEmpty()) {
+	  break;
+	}
+	action(line);
+  } while (!line.isNull());
+}
 
 #endif  // QLDD_H

@@ -8,7 +8,7 @@
 
 demanglerules::demanglerules(QWidget *parent) : QDialog(parent), ui(new Ui::demanglerules) {
   ui->setupUi(this);
-  MainWindow *m = (MainWindow *)parent;
+  auto *m = dynamic_cast<MainWindow *>(parent);
   ui->tableWidget->setColumnCount((int)Fields::COUNT);
   const auto &rulesRef = m->demangleRules();
   QStringList tableHeader;
@@ -24,8 +24,8 @@ demanglerules::demanglerules(QWidget *parent) : QDialog(parent), ui(new Ui::dema
   ui->tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);
   ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
   int i = 0;
-  for (auto item = rulesRef.begin(); item != rulesRef.end(); ++item) {
-    insertNewRow(i, item->first, item->second);
+  for (const auto &item : rulesRef) {
+    insertNewRow(i, item.first, item.second);
     ++i;
   }
 }
@@ -34,24 +34,24 @@ demanglerules::~demanglerules() { delete ui; }
 
 void demanglerules::insertNewRow(int row, const QString &src, const QString &dst) {
   ui->tableWidget->insertRow(row);
-  MainWindow *m = (MainWindow *)parent();
+  auto *m = dynamic_cast<MainWindow *>(parent());
 
-  QWidget *checkBoxWidget = new QWidget();
-  QCheckBox *checkBox = new QCheckBox();
-  QHBoxLayout *layoutCheckBox = new QHBoxLayout(checkBoxWidget);
+  auto *checkBoxWidget = new QWidget();
+  auto *checkBox = new QCheckBox();
+  auto *layoutCheckBox = new QHBoxLayout(checkBoxWidget);
   layoutCheckBox->addWidget(checkBox);
   layoutCheckBox->setAlignment(Qt::AlignCenter);
   layoutCheckBox->setContentsMargins(0, 0, 0, 0);
 
-  checkBox->setProperty("row", (int)row);
+  checkBox->setProperty("row", row);
   connect(checkBox, SIGNAL(toggled(bool)), this, SLOT(selectRow(bool)));
   ui->tableWidget->setCellWidget(row, (int)Fields::Selection, checkBoxWidget);
 
-  QTableWidgetItem *itemSrc = new QTableWidgetItem(src);
+  auto *itemSrc = new QTableWidgetItem(src);
   itemSrc->setToolTip(src);
   itemSrc->setFont(m->getFixedFont());
   ui->tableWidget->setItem(row, (int)Fields::Source, itemSrc);
-  QTableWidgetItem *itemDst = new QTableWidgetItem(dst);
+  auto *itemDst = new QTableWidgetItem(dst);
   itemDst->setToolTip(dst);
   itemDst->setFont(m->getFixedFont());
   ui->tableWidget->setItem(row, (int)Fields::Destination, itemDst);
@@ -90,7 +90,7 @@ void demanglerules::on_pBRemoveRule_clicked() {
 }
 
 void demanglerules::on_buttonBox_accepted() {
-  MainWindow *m = (MainWindow *)parent();
+  auto *m = dynamic_cast<MainWindow *>(parent());
   RulesMap rules;
   for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
     auto *itemSrc = ui->tableWidget->item(i, (int)Fields::Source);
