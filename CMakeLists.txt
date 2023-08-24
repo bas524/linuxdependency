@@ -10,7 +10,7 @@ project(Qldd
     LANGUAGES CXX
     VERSION ${MAJOR}.${MINOR}.${PATCH})
 
-option(FORCE_QT6 "Enable Qt6 usage force [OFF: default]" ON)
+option(FORCE_QT6 "Enable Qt6 usage force [OFF: default]" OFF)
 
 find_package(VersionHeader)
 set(PROJECT_VERSION "${MAJOR}.${MINOR}.${PATCH}.${COMMITTER_SHORTSHA}")
