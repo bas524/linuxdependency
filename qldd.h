@@ -75,20 +75,20 @@ class QLdd {
 
 template <typename Action>
 void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
-  std::unique_ptr<FILE, std::function<int(FILE *)>> stream(popen(execString.c_str(), "r"), pclose);
-  
-  QTextStream nmOutStream(stream.get());
+  std::unique_ptr<FILE, std::function<int(FILE *)>> cmdStream(popen(execString.c_str(), "r"), pclose);
+
+  QTextStream nmOutStream(cmdStream.get());
   QString line;
   do {
-	line = nmOutStream.readLine();
-	if (line.isNull()) {
-	  break;
-	}
-	line = line.trimmed();
-	if (line.isEmpty()) {
-	  break;
-	}
-	action(line);
+    line = nmOutStream.readLine();
+    if (line.isNull()) {
+      break;
+    }
+    line = line.trimmed();
+    if (line.isEmpty()) {
+      break;
+    }
+    action(line);
   } while (!line.isNull());
 }
 
