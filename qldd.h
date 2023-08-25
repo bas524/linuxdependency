@@ -7,6 +7,8 @@
 #include <QFileInfo>
 #include <QFont>
 #include <QTextStream>
+#include <memory>
+#include <functional>
 #include "customtypes.h"
 
 struct QMOD {
