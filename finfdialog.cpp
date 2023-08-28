@@ -16,7 +16,7 @@ FinfDialog::~FinfDialog() { delete ui; }
 
 void FinfDialog::on_findButton_clicked() {
   if (!ui->findLineEdit->text().isEmpty()) {
-    MainWindow *mw = dynamic_cast<MainWindow *>(parentWidget());
+    auto *mw = dynamic_cast<MainWindow *>(parentWidget());
     if (mw) {
       mw->fillExportTable(ui->findLineEdit->text());
     }

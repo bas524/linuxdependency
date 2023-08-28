@@ -11,36 +11,20 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QDir>
+#include <QDebug>
 #include <cxxabi.h>
 
 #ifdef __APPLE__
 #define CMD_LDD "otool -L"
 #define NM "nm -g"
 #define DEPEND_SPLITTER ":"
+#define INFO_SPLITTER "\n"
 #else
 #define CMD_LDD "ldd"
 #define NM "nm -D"
 #define DEPEND_SPLITTER "=>"
+#define INFO_SPLITTER ","
 #endif
-
-template <typename Action>
-void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
-  std::unique_ptr<FILE, std::function<int(FILE *)>> stream(popen(execString.c_str(), "r"), pclose);
-
-  QTextStream nmOutStream(stream.get());
-  QString line;
-  do {
-    line = nmOutStream.readLine();
-    if (line.isNull()) {
-      break;
-    }
-    line = line.trimmed();
-    if (line.isEmpty()) {
-      break;
-    }
-    action(line);
-  } while (!line.isNull());
-}
 
 QLdd::QLdd(QString fileName, QString lddDirPath, RulesMap demangleRules)
     : _fileName(std::move(fileName)),
@@ -96,7 +80,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
   std::stringstream ss;
 
   QDir::setCurrent(getPathOfBinary());
-  ss << CMD_LDD << " " << _fileName.toStdString();
+  ss << CMD_LDD << " \"" << _fileName.toStdString() << "\"";
 
   execAndDoOnEveryLine(ss.str(), [this, &treeWidget](const QString &line) {
     QTreeWidgetItem *item = nullptr;
@@ -162,7 +146,7 @@ void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
   listWidget.clear();
   int status = 0;
   std::stringstream ss;
-  ss << NM << " " << _fileName.toStdString() << " | grep \\ T\\ ";
+  ss << NM << " \"" << _fileName.toStdString() << "\" | grep \\ T\\ ";
   execAndDoOnEveryLine(ss.str(), [&status, &listWidget, &filter, this](const QString &line) {
     QStringList info = line.split(" ");
     QString demangled(info.at(2));
@@ -172,6 +156,9 @@ void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
       ::free(realname);
       for (auto item = _demangleRules.begin(); item != _demangleRules.end(); ++item) {
         demangled.replace(item->first, item->second);
+        if (demangled.contains("string")) {
+          qDebug() << "from->" << item->first << " to->" << item->second;
+        }
       }
     }
     std::unique_ptr<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
@@ -194,10 +181,10 @@ const QString &QLdd::getModifyTime() { return _tmModify; }
 
 QString QLdd::getInfo() {
   std::stringstream ss;
-  ss << "file " << _fileName.toStdString();
+  ss << "file \"" << _fileName.toStdString() << "\"";
   QString buf;
-  execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) { buf.append(line); });
-  QStringList slTmp = buf.split(",");
+  execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) { buf.append(line + "\n"); });
+  QStringList slTmp = buf.split(INFO_SPLITTER);
   buf.clear();
   for (const QString &v : qAsConst(slTmp)) {
     buf.append(v.trimmed()).append("\n");

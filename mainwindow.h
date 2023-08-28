@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  explicit MainWindow(const QString &fileName, QWidget *parent = nullptr);
+  explicit MainWindow(QString fileName, QWidget *parent = nullptr);
   ~MainWindow() override;
   void fillExportTable(const QString &filter);
   const RulesMap &demangleRules() const;

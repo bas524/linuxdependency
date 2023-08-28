@@ -8,15 +8,8 @@ VERSION.txt
 /Qldd
 *.qmake.stash
 /.vscode/
-/cmake-build-Debug/
-/cmake-build-Release/
 /.idea/
-/cmake-build-debug/
-/cmake-build-release/
+/cmake-build-*/
 /.DS_Store
 /CMakeLists.txt.user
-/cmake-build-debug/
-/cmake-build-qt-debug/
-/cmake-build-qt-relwithdebInfo/
-/cmake-build-relwithdebinfo/
 /cmake-vsc-build/
