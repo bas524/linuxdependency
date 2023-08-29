@@ -6,10 +6,15 @@
 #include <QList>
 #include <QDebug>
 
+template <typename T>
+static T enum_cast(demanglerules::Fields field) {
+  return static_cast<T>(field);
+};
+
 demanglerules::demanglerules(QWidget *parent) : QDialog(parent), ui(new Ui::demanglerules) {
   ui->setupUi(this);
   auto *m = dynamic_cast<MainWindow *>(parent);
-  ui->tableWidget->setColumnCount((int)Fields::COUNT);
+  ui->tableWidget->setColumnCount(enum_cast<int>(Fields::COUNT));
   const auto &rulesRef = m->demangleRules();
   QStringList tableHeader;
   tableHeader << "#"
@@ -45,23 +50,23 @@ void demanglerules::insertNewRow(int row, const QString &src, const QString &dst
 
   checkBox->setProperty("row", row);
   connect(checkBox, SIGNAL(toggled(bool)), this, SLOT(selectRow(bool)));
-  ui->tableWidget->setCellWidget(row, (int)Fields::Selection, checkBoxWidget);
+  ui->tableWidget->setCellWidget(row, enum_cast<int>(Fields::Selection), checkBoxWidget);
 
   auto *itemSrc = new QTableWidgetItem(src);
   itemSrc->setToolTip(src);
   itemSrc->setFont(m->getFixedFont());
-  ui->tableWidget->setItem(row, (int)Fields::Source, itemSrc);
+  ui->tableWidget->setItem(row, enum_cast<int>(Fields::Source), itemSrc);
   auto *itemDst = new QTableWidgetItem(dst);
   itemDst->setToolTip(dst);
   itemDst->setFont(m->getFixedFont());
-  ui->tableWidget->setItem(row, (int)Fields::Destination, itemDst);
+  ui->tableWidget->setItem(row, enum_cast<int>(Fields::Destination), itemDst);
 }
 
 void demanglerules::selectRow(bool flag) {
   int row = sender()->property("row").toInt();
-  QModelIndex index0 = ui->tableWidget->model()->index(row, (int)Fields::Selection);
-  QModelIndex index1 = ui->tableWidget->model()->index(row, (int)Fields::Source);
-  QModelIndex index2 = ui->tableWidget->model()->index(row, (int)Fields::Destination);
+  QModelIndex index0 = ui->tableWidget->model()->index(row, enum_cast<int>(Fields::Selection));
+  QModelIndex index1 = ui->tableWidget->model()->index(row, enum_cast<int>(Fields::Source));
+  QModelIndex index2 = ui->tableWidget->model()->index(row, enum_cast<int>(Fields::Destination));
   if (flag == true) {
     ui->tableWidget->selectionModel()->select(index0, QItemSelectionModel::Select);
     ui->tableWidget->selectionModel()->select(index1, QItemSelectionModel::Select);
@@ -76,7 +81,7 @@ void demanglerules::selectRow(bool flag) {
 void demanglerules::on_pBAddRule_clicked() {
   auto row = ui->tableWidget->rowCount();
   insertNewRow(row, "", "");
-  ui->tableWidget->setCurrentCell(row, (int)Fields::Source);
+  ui->tableWidget->setCurrentCell(row, enum_cast<int>(Fields::Source));
   ui->tableWidget->editItem(ui->tableWidget->currentItem());
 }
 
@@ -93,8 +98,8 @@ void demanglerules::on_buttonBox_accepted() {
   auto *m = dynamic_cast<MainWindow *>(parent());
   RulesMap rules;
   for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
-    auto *itemSrc = ui->tableWidget->item(i, (int)Fields::Source);
-    auto *itemDst = ui->tableWidget->item(i, (int)Fields::Destination);
+    auto *itemSrc = ui->tableWidget->item(i, enum_cast<int>(Fields::Source));
+    auto *itemDst = ui->tableWidget->item(i, enum_cast<int>(Fields::Destination));
     rules.push_back({itemSrc->text(), itemDst->text()});
     qDebug() << itemSrc->text() << "->" << itemDst->text();
   }
