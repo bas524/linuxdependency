@@ -54,14 +54,17 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(QtVerPath qt5)
 if (FORCE_QT6)
     set(QtVer Qt6)
+    set(QtVerPath qt6)
     find_package(${QtVer} COMPONENTS Widgets REQUIRED)
 else()
 set(QtVer Qt5)
     find_package(${QtVer} COMPONENTS Widgets QUIET)
     if (NOT Qt5_FOUND)
         set(QtVer Qt6)
+	set(QtVerPath qt6)
         find_package(${QtVer} COMPONENTS Widgets REQUIRED)
     endif ()
 endif()
@@ -154,9 +157,13 @@ if(APPLE)
                         COMMAND plutil -replace NSHighResolutionCapable -bool true Qldd.app/Contents/Info.plist
                         )
       endif()
+      execute_process (COMMAND bash -c "brew --prefix"
+                       OUTPUT_VARIABLE brew_path
+                      )
+      string(STRIP ${brew_path} brew_path)
       add_custom_command(TARGET Qldd
                          POST_BUILD
-                         COMMAND macdeployqt Qldd.app
+                         COMMAND "${brew_path}/opt/${QtVerPath}/bin/macdeployqt" Qldd.app
                         )
 else()
 
