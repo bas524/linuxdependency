@@ -154,7 +154,7 @@ if(APPLE)
                         COMMAND plutil -replace NSHighResolutionCapable -bool true Qldd.app/Contents/Info.plist
                         )
       endif()
-      add_custom_command(TARGET krb5-ticket-watcher
+      add_custom_command(TARGET Qldd
                          POST_BUILD
                          COMMAND macdeployqt Qldd.app
                         )
