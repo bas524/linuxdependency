@@ -55,6 +55,7 @@ void demanglerules::insertNewRow(int row, const QString &src, const QString &dst
   auto *itemSrc = new QTableWidgetItem(src);
   itemSrc->setToolTip(src);
   itemSrc->setFont(m->getFixedFont());
+
   ui->tableWidget->setItem(row, enum_cast<int>(Fields::Source), itemSrc);
   auto *itemDst = new QTableWidgetItem(dst);
   itemDst->setToolTip(dst);
