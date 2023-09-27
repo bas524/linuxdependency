@@ -9,6 +9,7 @@
 #include <QTextStream>
 #include <memory>
 #include <functional>
+#include <future>
 #include "customtypes.h"
 
 struct QMOD {
@@ -75,12 +76,16 @@ class QLdd {
   QString getHumanReadableDataSize() const;
 };
 
+enum class Exec { SYNC = 0, ASYNC = 1 };
+
 template <typename Action>
-void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
+void execAndDoOnEveryLine(const std::string &execString, const Action &action, Exec exec = Exec::SYNC) {
   std::unique_ptr<FILE, std::function<int(FILE *)>> cmdStream(popen(execString.c_str(), "r"), pclose);
 
   QTextStream nmOutStream(cmdStream.get());
   QString line;
+  using returnType = typename std::result_of<Action(const QString &)>::type;
+  std::list<std::future<returnType>> retList;
   do {
     line = nmOutStream.readLine();
     if (line.isNull()) {
@@ -90,8 +95,15 @@ void execAndDoOnEveryLine(const std::string &execString, const Action &action) {
     if (line.isEmpty()) {
       break;
     }
-    action(line);
+    if (exec == Exec::ASYNC) {
+      retList.emplace_back(std::async(std::launch::async, action, QString(line)));
+    } else {
+      action(line);
+    }
   } while (!line.isNull());
+  for (auto &l : retList) {
+    l.wait();
+  }
 }
 
 #endif  // QLDD_H

@@ -41,7 +41,7 @@
           </property>
           <widget class="QTreeWidget" name="treeWidget">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -609,7 +609,7 @@
      <x>0</x>
      <y>0</y>
      <width>725</width>
-     <height>31</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

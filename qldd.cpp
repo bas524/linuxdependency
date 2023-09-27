@@ -144,31 +144,36 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
 
 void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
   listWidget.clear();
-  int status = 0;
+  std::mutex mutex;
   std::stringstream ss;
   ss << NM << " \"" << _fileName.toStdString() << "\" | grep \\ T\\ ";
-  execAndDoOnEveryLine(ss.str(), [&status, &listWidget, &filter, this](const QString &line) {
-    QStringList info = line.split(" ");
-    QString demangled(info.at(2));
-    char *realname = abi::__cxa_demangle(info.at(2).toStdString().c_str(), nullptr, nullptr, &status);
-    if (realname) {
-      demangled = QString::fromLocal8Bit(realname);
-      ::free(realname);
-      for (auto item = _demangleRules.begin(); item != _demangleRules.end(); ++item) {
-        demangled.replace(item->first, item->second);
-        if (demangled.contains("string")) {
-          qDebug() << "from->" << item->first << " to->" << item->second;
+  execAndDoOnEveryLine(
+      ss.str(),
+      [&mutex, &listWidget, &filter, this](const QString &line) {
+        int status = 0;
+        QStringList info = line.split(" ");
+        QString demangled(info.at(2));
+        char *realname = abi::__cxa_demangle(info.at(2).toStdString().c_str(), nullptr, nullptr, &status);
+        if (realname) {
+          demangled = QString::fromLocal8Bit(realname);
+          ::free(realname);
+          for (auto &_demangleRule : _demangleRules) {
+            demangled.replace(_demangleRule.first, _demangleRule.second);
+            if (demangled.contains("string")) {
+              qDebug() << "from->" << _demangleRule.first << " to->" << _demangleRule.second;
+            }
+          }
         }
-      }
-    }
-    std::unique_ptr<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
-    item->setToolTip(demangled);
-    if (!filter.isEmpty() && demangled.contains(filter, Qt::CaseInsensitive)) {
-      listWidget.addItem(item.release());
-    } else if (filter.isEmpty()) {
-      listWidget.addItem(item.release());
-    }
-  });
+        std::unique_ptr<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
+        item->setToolTip(demangled);
+        std::unique_lock<std::mutex> lock(mutex);
+        if (!filter.isEmpty() && demangled.contains(filter, Qt::CaseInsensitive)) {
+          listWidget.addItem(item.release());
+        } else if (filter.isEmpty()) {
+          listWidget.addItem(item.release());
+        }
+      },
+      Exec::ASYNC);
 }
 
 QString QLdd::getPathOfBinary() { return _fileInfo.absolutePath(); }

@@ -132,7 +132,7 @@ if(APPLE)
     set(CMAKE_MACOSX_RPATH ON)
     set(CPACK_DMG_BACKGROUND_IMAGE
           "${CMAKE_SOURCE_DIR}/resources/CMakeDMGBackground.tif")
-      set(CPACK_DMG_DS_STORE_SETUP_SCRIPT
+    set(CPACK_DMG_DS_STORE_SETUP_SCRIPT
           "${CMAKE_SOURCE_DIR}/resources/CMakeDMGSetup.scpt")
 
     install(TARGETS Qldd
@@ -156,15 +156,14 @@ if(APPLE)
                         POST_BUILD
                         COMMAND plutil -replace NSHighResolutionCapable -bool true Qldd.app/Contents/Info.plist
                         )
-      endif()
-      execute_process (COMMAND bash -c "brew --prefix"
-                       OUTPUT_VARIABLE brew_path
-                      )
-      string(STRIP ${brew_path} brew_path)
-      add_custom_command(TARGET Qldd
-                         POST_BUILD
-                         COMMAND "${brew_path}/opt/${QtVerPath}/bin/macdeployqt" Qldd.app
-                        )
+    endif()
+    execute_process (COMMAND bash -c "brew --prefix"
+                     OUTPUT_VARIABLE brew_path)
+
+    string(STRIP ${brew_path} brew_path)
+    add_custom_command(TARGET Qldd
+                       POST_BUILD
+                       COMMAND "${brew_path}/opt/${QtVerPath}/bin/macdeployqt" Qldd.app)
 else()
 
     # Components:
