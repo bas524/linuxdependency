@@ -54,6 +54,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(Threads REQUIRED)
+
 set(QtVerPath qt5)
 if (FORCE_QT6)
     set(QtVer Qt6)
@@ -93,7 +95,7 @@ set(SOURCES
     )
 target_sources(Qldd PRIVATE ${SOURCES})
 target_compile_definitions(Qldd PRIVATE -DPROJECT_VERSION="${PROJECT_VERSION}" -DQ_COMPILER_INITIALIZER_LISTS)
-target_link_libraries(Qldd PRIVATE ${QtVer}::Widgets)
+target_link_libraries(Qldd PRIVATE ${QtVer}::Widgets Threads::Threads)
 
 set(CPACK_SOURCE_IGNORE_FILES
     #svn files
