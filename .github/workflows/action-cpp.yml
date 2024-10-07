@@ -414,7 +414,7 @@ jobs:
       - name: mkdir
         run: mkdir cmake-build-release
       - name: cmake cmake-build-release
-        run: cmake -DCMAKE_PREFIX_PATH=$(brew --prefix)/opt/qt5 -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
+        run: cmake -DCMAKE_PREFIX_PATH=$(brew --prefix)/opt/qt@5 -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
       - name: cmake make
         run: cmake --build cmake-build-release/ --target all
         env:
