@@ -239,7 +239,7 @@ void MainWindow::initDemangleRules() {
     QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
     QJsonObject obj = doc.object();
     QJsonArray arrRules = obj["rules"].toArray();
-    for (const auto &item : qAsConst(arrRules)) {
+    for (const auto &item : arrRules) {
       auto itemObj = item.toObject();
       auto itemKeys = itemObj.keys();
       if (itemKeys.size() == 1) {

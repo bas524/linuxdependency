@@ -66,7 +66,7 @@ set(QtVer Qt5)
     find_package(${QtVer} COMPONENTS Widgets QUIET)
     if (NOT Qt5_FOUND)
         set(QtVer Qt6)
-	      set(QtVerPath qt6)
+        set(QtVerPath qt6)
         find_package(${QtVer} COMPONENTS Widgets REQUIRED)
     endif ()
 endif()
@@ -163,6 +163,10 @@ if(APPLE)
                      OUTPUT_VARIABLE brew_path)
 
     string(STRIP ${brew_path} brew_path)
+    link_directories("${brew_path}/lib")
+    add_custom_command(TARGET Qldd
+                       POST_BUILD
+                       COMMAND ln -s "${brew_path}/lib" "lib")
     add_custom_command(TARGET Qldd
                        POST_BUILD
                        COMMAND "${brew_path}/opt/${QtVerPath}/bin/macdeployqt" Qldd.app)

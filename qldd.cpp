@@ -92,7 +92,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       sl = line.split(DEPEND_SPLITTER);
     }
     int i = 0;
-    for (const QString &v : qAsConst(sl)) {
+    for (const QString &v : sl) {
       if (v.contains("(0x") || v.contains("(compatibility")) {
         QStringList slTmp = v.split("(");
         if (slTmp.size() > 1) {
@@ -122,7 +122,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       sl.removeFirst();
       QTreeWidgetItem *tmp = item;
       QColor redC("red");
-      for (const QString &v : qAsConst(sl)) {
+      for (const QString &v : sl) {
         if (!v.trimmed().isEmpty()) {
           if (v.contains("not found")) {
             tmp->setForeground(0, QBrush(redC));
@@ -191,7 +191,7 @@ QString QLdd::getInfo() {
   execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) { buf.append(line + "\n"); });
   QStringList slTmp = buf.split(INFO_SPLITTER);
   buf.clear();
-  for (const QString &v : qAsConst(slTmp)) {
+  for (const QString &v : slTmp) {
     buf.append(v.trimmed()).append("\n");
   }
   return buf;
