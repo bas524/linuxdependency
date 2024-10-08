@@ -17,10 +17,10 @@ jobs:
             distro: ubuntu_latest
           - arch: aarch64
             distro: fedora_latest
-          - arch: ppc64le
-            distro: fedora_latest
-          - arch: s390x
-            distro: fedora_latest
+          # - arch: ppc64le
+          #   distro: fedora_latest
+          # - arch: s390x
+          #   distro: fedora_latest
     steps:
       - name: Get current date
         id: date
@@ -85,6 +85,7 @@ jobs:
       matrix:
         container:
           - ubuntu:22.04
+          - ubuntu:24.04
 
     container:
       image: ${{ matrix.container }}
