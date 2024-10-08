@@ -31,7 +31,7 @@ jobs:
       - name: Set artifacts dir
         id: artifacts
         run: echo "artifacts=$(echo $PWD/artifacts)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: uraimo/run-on-arch-action@v2
         name: Run commands
         id: configure-and-build
@@ -70,7 +70,7 @@ jobs:
         id: get-version
         run: echo "prj_ver=$(cat ${PWD}/artifacts/VERSION.txt)" >> $GITHUB_OUTPUT
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}-{2}', steps.get-version.outputs.prj_ver, matrix.distro, matrix.arch) }}
           path: ${{ format('{0}/Qldd-{1}-{2}.???', steps.artifacts.outputs.artifacts ,steps.get-version.outputs.prj_ver, matrix.arch) }}
@@ -97,7 +97,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
         run: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
@@ -116,7 +116,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -124,7 +124,7 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
@@ -149,7 +149,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
         run: |
@@ -170,7 +170,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -178,7 +178,7 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
@@ -203,7 +203,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
         run: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
@@ -222,7 +222,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -230,7 +230,7 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
@@ -255,7 +255,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
         run: apt-get update -y && apt-get install -yq binutils python-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
@@ -274,7 +274,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -282,7 +282,7 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
@@ -307,7 +307,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
         run: |
@@ -332,7 +332,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -340,7 +340,7 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
@@ -365,7 +365,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
         run: yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build redhat-lsb
@@ -384,7 +384,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -392,7 +392,7 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
@@ -407,7 +407,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: brew-pkgs
         run: brew install qt@5
@@ -425,7 +425,7 @@ jobs:
         run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DragNDrop && cd ..
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}-Darwin.dmg', steps.get-version.outputs.prj_ver) }}
           path: cmake-build-release/${{ format('Qldd-{0}-Darwin.dmg', steps.get-version.outputs.prj_ver) }}
