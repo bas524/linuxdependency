@@ -1,7 +1,7 @@
 # Task 08 — Fix copyExportItem always copying currentRow
 
 **Priority:** Medium  
-**Status:** TODO  
+**Status:** DONE  
 **File:** `mainwindow.cpp:263–272`
 
 ## Problem
