@@ -2,8 +2,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/cmake/modules")
 cmake_minimum_required(VERSION 3.5)
 
 set(MAJOR "1")
-set(MINOR "2")
-set(PATCH "1")
+set(MINOR "3")
+set(PATCH "0")
 cmake_policy(SET CMP0048 NEW)
 
 project(Qldd

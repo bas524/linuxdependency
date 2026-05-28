@@ -273,18 +273,9 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@5
-        id: container_colon
-        with:
-          source: ${{ matrix.container }}
-          find: ':'
-          replace: '-'
-      - uses: mad9000/actions-find-and-replace-string@5
+      - name: Sanitize container name for artifact
         id: container
-        with:
-          source: ${{ steps.container_colon.outputs.value }}
-          find: '/'
-          replace: '-'
+        run: echo "value=$(echo '${{ matrix.container }}' | tr ':/' '--')" >> $GITHUB_OUTPUT
 
       - name: Upload Qldd binary
         uses: actions/upload-artifact@v4

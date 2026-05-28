@@ -63,6 +63,10 @@ The app is a single-window Qt application with no separate library targets.
 
 These are installed as separate CPack components (`nautilus-integration`, `dolphin-integration`) and are not part of the C++ build.
 
+## Workflow constraints
+
+**Never commit or push without explicit user approval.** Always show the intended changes and ask before running `git commit` or `git push`. Each commit/push requires a separate confirmation — a prior approval does not carry over.
+
 ## Code style
 
 `.clang-format` and `.clang-tidy` are present. Run clang-format before committing:
