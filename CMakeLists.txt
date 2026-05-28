@@ -170,6 +170,11 @@ if(APPLE)
     add_custom_command(TARGET Qldd
                        POST_BUILD
                        COMMAND "${brew_path}/opt/${QtVerPath}/bin/macdeployqt" Qldd.app)
+    # Re-sign the entire bundle after macdeployqt copies unsigned Homebrew dylibs into it.
+    # Without this macOS 15+ kills the process with CODESIGNING / Invalid Page on launch.
+    add_custom_command(TARGET Qldd
+                       POST_BUILD
+                       COMMAND codesign --force --deep --sign - Qldd.app)
 else()
 
     # Components:
