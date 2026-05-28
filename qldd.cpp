@@ -202,12 +202,11 @@ QString QLdd::getInfo() {
   std::stringstream ss;
   ss << "file \"" << _fileName.toStdString() << "\"";
   QString buf;
-  execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) { buf.append(line + "\n"); });
-  QStringList slTmp = buf.split(INFO_SPLITTER);
-  buf.clear();
-  for (const QString &v : slTmp) {
-    buf.append(v.trimmed()).append("\n");
-  }
+  execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) {
+    for (const QString &part : line.split(INFO_SPLITTER)) {
+      buf.append(part.trimmed()).append("\n");
+    }
+  });
   return buf;
 }
 const QMOD &QLdd::getOwnerMod() const { return _ownerMod; }

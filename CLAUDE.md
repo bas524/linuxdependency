@@ -82,6 +82,6 @@ Detailed task files live in `tasks/`. Do not implement fixes not listed here wit
 | [task-04](tasks/task-04-widget-update-batching.md) | `qldd.cpp:77–177` | **High** | DONE | Missing `setUpdatesEnabled(false/true)` causes per-item repaints |
 | [task-05](tasks/task-05-qcolor-outside-loop.md) | `qldd.cpp:124` | Low | DONE | `QColor("red")` constructed per dependency line; replace with `Qt::red` |
 | [task-06](tasks/task-06-cache-dynamic-cast.md) | `demanglerules.cpp:42` | Low | DONE | `dynamic_cast` repeated per row in loop; cache the result |
-| [task-07](tasks/task-07-getinfo-double-build.md) | `qldd.cpp:187–198` | Low | TODO | `getInfo` builds string twice; eliminate intermediate `QStringList` |
+| [task-07](tasks/task-07-getinfo-double-build.md) | `qldd.cpp:187–198` | Low | DONE | `getInfo` builds string twice; eliminate intermediate `QStringList` |
 | [task-08](tasks/task-08-copy-export-item-bug.md) | `mainwindow.cpp:263–272` | Medium | TODO | `copyExportItem` always copies `currentRow()` regardless of selection |
 | [task-09](tasks/task-09-qdir-setcurrent-global-state.md) | `qldd.cpp:82,142` | Medium | TODO | `QDir::setCurrent` mutates process-global CWD; pass absolute path to command instead |

@@ -1,7 +1,7 @@
 # Task 07 — Eliminate double string build in getInfo
 
 **Priority:** Low  
-**Status:** TODO  
+**Status:** DONE  
 **File:** `qldd.cpp:187–198`
 
 ## Problem
