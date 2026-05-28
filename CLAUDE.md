@@ -76,7 +76,7 @@ Detailed task files live in `tasks/`. Do not implement fixes not listed here wit
 
 | ID | File(s) | Priority | Status | Summary |
 |---|---|---|---|---|
-| [task-01](tasks/task-01-fillexporttable-threading.md) | `qldd.cpp:145–177` | **Critical** | TODO | Qt widget calls from worker threads — undefined behavior / crash risk |
+| [task-01](tasks/task-01-fillexporttable-threading.md) | `qldd.cpp:145–177` | **Critical** | DONE | Qt widget calls from worker threads — undefined behavior / crash risk |
 | [task-02](tasks/task-02-remove-debug-logging.md) | `qldd.cpp:162–164` | **High** | TODO | `qDebug` in hot symbol loop fires thousands of times in release builds |
 | [task-03](tasks/task-03-demangle-heap-alloc.md) | `qldd.cpp:156` | Medium | TODO | `toStdString().c_str()` allocates heap per symbol; use `toUtf8().constData()` |
 | [task-04](tasks/task-04-widget-update-batching.md) | `qldd.cpp:77–177` | **High** | TODO | Missing `setUpdatesEnabled(false/true)` causes per-item repaints |

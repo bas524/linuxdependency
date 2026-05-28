@@ -1,7 +1,7 @@
 # Task 01 — Fix thread-safety bug in fillExportTable
 
 **Priority:** Critical  
-**Status:** TODO  
+**Status:** DONE  
 **File:** `qldd.cpp:145–177`
 
 ## Problem
