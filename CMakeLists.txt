@@ -21,7 +21,11 @@ configure_file(${CMAKE_SOURCE_DIR}/resources/qldd.desktop.in ${CMAKE_BINARY_DIR}
 function(get_linux_lsb_release_information)
     find_program(LSB_RELEASE_EXEC lsb_release)
     if(NOT LSB_RELEASE_EXEC)
-        message(FATAL_ERROR "Could not detect lsb_release executable, can not gather required information")
+        message(WARNING "lsb_release not found; distro info will be unavailable")
+        set(LSB_RELEASE_ID_SHORT "unknown" PARENT_SCOPE)
+        set(LSB_RELEASE_VERSION_SHORT "unknown" PARENT_SCOPE)
+        set(LSB_RELEASE_CODENAME_SHORT "unknown" PARENT_SCOPE)
+        return()
     endif()
 
     execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --id OUTPUT_VARIABLE LSB_RELEASE_ID_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
