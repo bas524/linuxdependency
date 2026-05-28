@@ -70,18 +70,3 @@ These are installed as separate CPack components (`nautilus-integration`, `dolph
 clang-format -i *.cpp *.h
 ```
 
-## Pending performance / correctness tasks
-
-Detailed task files live in `tasks/`. Do not implement fixes not listed here without first checking whether an existing task covers the change.
-
-| ID | File(s) | Priority | Status | Summary |
-|---|---|---|---|---|
-| [task-01](tasks/task-01-fillexporttable-threading.md) | `qldd.cpp:145–177` | **Critical** | DONE | Qt widget calls from worker threads — undefined behavior / crash risk |
-| [task-02](tasks/task-02-remove-debug-logging.md) | `qldd.cpp:162–164` | **High** | DONE | `qDebug` in hot symbol loop fires thousands of times in release builds |
-| [task-03](tasks/task-03-demangle-heap-alloc.md) | `qldd.cpp:156` | Medium | DONE | `toStdString().c_str()` allocates heap per symbol; use `toUtf8().constData()` |
-| [task-04](tasks/task-04-widget-update-batching.md) | `qldd.cpp:77–177` | **High** | DONE | Missing `setUpdatesEnabled(false/true)` causes per-item repaints |
-| [task-05](tasks/task-05-qcolor-outside-loop.md) | `qldd.cpp:124` | Low | DONE | `QColor("red")` constructed per dependency line; replace with `Qt::red` |
-| [task-06](tasks/task-06-cache-dynamic-cast.md) | `demanglerules.cpp:42` | Low | DONE | `dynamic_cast` repeated per row in loop; cache the result |
-| [task-07](tasks/task-07-getinfo-double-build.md) | `qldd.cpp:187–198` | Low | DONE | `getInfo` builds string twice; eliminate intermediate `QStringList` |
-| [task-08](tasks/task-08-copy-export-item-bug.md) | `mainwindow.cpp:263–272` | Medium | DONE | `copyExportItem` always copies `currentRow()` regardless of selection |
-| [task-09](tasks/task-09-qdir-setcurrent-global-state.md) | `qldd.cpp:82,142` | Medium | DONE | `QDir::setCurrent` mutates process-global CWD; pass absolute path to command instead |
