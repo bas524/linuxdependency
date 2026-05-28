@@ -1,7 +1,7 @@
 # Task 06 — Cache dynamic_cast result in demanglerules::insertNewRow
 
 **Priority:** Low  
-**Status:** TODO  
+**Status:** DONE  
 **File:** `demanglerules.cpp:42`
 
 ## Problem
