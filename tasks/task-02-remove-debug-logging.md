@@ -1,7 +1,7 @@
 # Task 02 — Remove debug logging from hot symbol-processing loop
 
 **Priority:** High  
-**Status:** TODO  
+**Status:** DONE (resolved as part of task-01 rewrite)  
 **File:** `qldd.cpp:162–164`
 
 ## Problem
