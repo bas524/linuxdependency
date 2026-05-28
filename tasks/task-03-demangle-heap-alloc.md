@@ -1,7 +1,7 @@
 # Task 03 — Eliminate redundant heap allocation in __cxa_demangle call
 
 **Priority:** Medium  
-**Status:** TODO  
+**Status:** DONE (resolved as part of task-01 rewrite)  
 **File:** `qldd.cpp:156`
 
 ## Problem
