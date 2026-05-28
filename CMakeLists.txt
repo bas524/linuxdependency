@@ -166,7 +166,7 @@ if(APPLE)
     link_directories("${brew_path}/lib")
     add_custom_command(TARGET Qldd
                        POST_BUILD
-                       COMMAND ln -s "${brew_path}/lib" "lib")
+                       COMMAND ln -sf "${brew_path}/lib" "lib")
     add_custom_command(TARGET Qldd
                        POST_BUILD
                        COMMAND "${brew_path}/opt/${QtVerPath}/bin/macdeployqt" Qldd.app)
