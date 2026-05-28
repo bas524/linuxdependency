@@ -13,3 +13,5 @@ VERSION.txt
 /.DS_Store
 /CMakeLists.txt.user
 /cmake-vsc-build/
+/build/
+/.qtcreator/
