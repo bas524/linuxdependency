@@ -53,6 +53,7 @@ jobs:
                 ;;
             esac
           run: |
+            ulimit -s unlimited &&
             mkdir cmake-build-release &&
             cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H. &&
             cmake --build cmake-build-release/ --target all &&
