@@ -29,11 +29,11 @@
 #endif
 
 QLdd::QLdd(QString fileName, QString lddDirPath, RulesMap demangleRules)
-    : _fileName(std::move(fileName)),
+    : _fileName(QFileInfo(fileName).absoluteFilePath()),
       _fileInfo(_fileName),
       _link(false),
-      _lddDirPath(std::move(lddDirPath)),
       _demangleRules(std::move(demangleRules)) {
+  Q_UNUSED(lddDirPath)
   _ownerMod.read = _fileInfo.permission(QFile::ReadOwner);
   _ownerMod.write = _fileInfo.permission(QFile::WriteOwner);
   _ownerMod.execute = _fileInfo.permission(QFile::ExeOwner);
@@ -81,7 +81,6 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
 
   std::stringstream ss;
 
-  QDir::setCurrent(getPathOfBinary());
   ss << CMD_LDD << " \"" << _fileName.toStdString() << "\"";
 
   treeWidget.setUpdatesEnabled(false);
@@ -141,8 +140,6 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
     }
   });
   treeWidget.setUpdatesEnabled(true);
-
-  QDir::setCurrent(_lddDirPath);
 }
 
 void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {

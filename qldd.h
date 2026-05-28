@@ -65,7 +65,6 @@ class QLdd {
   QString _tmCreate;
   QString _tmAccess;
   QString _tmModify;
-  QString _lddDirPath;
   QString _fileSize;
   QMOD _ownerMod{};
   QMOD _groupMod{};

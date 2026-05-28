@@ -1,7 +1,7 @@
 # Task 09 — Remove QDir::setCurrent global state from fillDependency
 
 **Priority:** Medium  
-**Status:** TODO  
+**Status:** DONE  
 **File:** `qldd.cpp:82, 142`
 
 ## Problem
