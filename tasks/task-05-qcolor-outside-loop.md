@@ -1,7 +1,7 @@
 # Task 05 — Move QColor construction outside per-line lambda
 
 **Priority:** Low  
-**Status:** TODO  
+**Status:** DONE (resolved together with task-04)  
 **File:** `qldd.cpp:124`
 
 ## Problem

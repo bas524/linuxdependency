@@ -1,7 +1,7 @@
 # Task 04 — Batch widget updates in fillDependency and fillExportTable
 
 **Priority:** High  
-**Status:** TODO  
+**Status:** DONE  
 **Files:** `qldd.cpp:77–143`, `qldd.cpp:145–177`
 
 ## Problem

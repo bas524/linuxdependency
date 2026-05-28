@@ -84,6 +84,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
   QDir::setCurrent(getPathOfBinary());
   ss << CMD_LDD << " \"" << _fileName.toStdString() << "\"";
 
+  treeWidget.setUpdatesEnabled(false);
   execAndDoOnEveryLine(ss.str(), [this, &treeWidget](const QString &line) {
     QTreeWidgetItem *item = nullptr;
     QStringList sl;
@@ -123,11 +124,10 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       treeWidget.addTopLevelItem(item);
       sl.removeFirst();
       QTreeWidgetItem *tmp = item;
-      QColor redC("red");
       for (const QString &v : sl) {
         if (!v.trimmed().isEmpty()) {
           if (v.contains("not found")) {
-            tmp->setForeground(0, QBrush(redC));
+            tmp->setForeground(0, QBrush(Qt::red));
             tmp->setText(0, tmp->text(0) + " " + v);
             tmp->setToolTip(0, tmp->text(0));
           } else {
@@ -140,6 +140,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       }
     }
   });
+  treeWidget.setUpdatesEnabled(true);
 
   QDir::setCurrent(_lddDirPath);
 }
