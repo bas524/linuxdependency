@@ -274,11 +274,17 @@ jobs:
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
       - uses: mad9000/actions-find-and-replace-string@5
-        id: container
+        id: container_colon
         with:
           source: ${{ matrix.container }}
-          find: ':'        # we want to remove : from container name
-          replace: '-'     # and replace it with -
+          find: ':'
+          replace: '-'
+      - uses: mad9000/actions-find-and-replace-string@5
+        id: container
+        with:
+          source: ${{ steps.container_colon.outputs.value }}
+          find: '/'
+          replace: '-'
 
       - name: Upload Qldd binary
         uses: actions/upload-artifact@v4
