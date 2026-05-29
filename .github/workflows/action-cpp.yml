@@ -46,7 +46,7 @@ jobs:
           install: |
             case "${{ matrix.distro }}" in
               ubuntu*|jessie|stretch|buster|bullseye)
-                apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release libc6-dev libpthread-stubs0-dev
+                apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release libc6-dev libpthread-stubs0-dev glibc-dev
                 ;;
               fedora*)
                 yum update -y && yum install -yq binutils nautilus-python qt5-qtbase-devel qt5-qttools rpm-build glibc-devel
