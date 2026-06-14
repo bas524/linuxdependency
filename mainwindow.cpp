@@ -239,7 +239,7 @@ void MainWindow::initDemangleRules() {
     QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
     QJsonObject obj = doc.object();
     QJsonArray arrRules = obj["rules"].toArray();
-    for (const auto &item : qAsConst(arrRules)) {
+    for (const auto &item : arrRules) {
       auto itemObj = item.toObject();
       auto itemKeys = itemObj.keys();
       if (itemKeys.size() == 1) {
@@ -261,13 +261,12 @@ void MainWindow::showContextMenu(const QPoint &pos) {
 }
 
 void MainWindow::copyExportItem() {
-  QClipboard *clipboard = qApp->clipboard();
-  // If multiple selection is on, we need to erase all selected items
-  for (int i = 0; i < ui->listWidgetExportTable->selectedItems().size(); ++i) {
-    // Get curent item on selected row
-    QListWidgetItem *item = ui->listWidgetExportTable->item(ui->listWidgetExportTable->currentRow());
-    // And copy text from it
-    clipboard->setText(item->text());
+  QStringList texts;
+  for (const auto *item : ui->listWidgetExportTable->selectedItems()) {
+    texts << item->text();
+  }
+  if (!texts.isEmpty()) {
+    qApp->clipboard()->setText(texts.join('\n'));
   }
 }
 void MainWindow::on_checkBoxOwnerRead_clicked(bool checked) { ui->checkBoxOwnerRead->setChecked(!checked); }

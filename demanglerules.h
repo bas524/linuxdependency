@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+class MainWindow;
+
 namespace Ui {
 class demanglerules;
 }
@@ -17,6 +19,7 @@ class demanglerules : public QDialog {
 
  private:
   Ui::demanglerules *ui;
+  MainWindow *_mainWindow;
   void insertNewRow(int row, const QString &src, const QString &dst);
  private slots:
   void selectRow(bool flag);

@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <sstream>
 #include <cstdlib>
+#include <vector>
+#include <utility>
 #include <QTreeWidgetItem>
 #include <QListWidgetItem>
 #include <QFileInfo>
@@ -27,11 +29,11 @@
 #endif
 
 QLdd::QLdd(QString fileName, QString lddDirPath, RulesMap demangleRules)
-    : _fileName(std::move(fileName)),
+    : _fileName(QFileInfo(fileName).absoluteFilePath()),
       _fileInfo(_fileName),
       _link(false),
-      _lddDirPath(std::move(lddDirPath)),
       _demangleRules(std::move(demangleRules)) {
+  Q_UNUSED(lddDirPath)
   _ownerMod.read = _fileInfo.permission(QFile::ReadOwner);
   _ownerMod.write = _fileInfo.permission(QFile::WriteOwner);
   _ownerMod.execute = _fileInfo.permission(QFile::ExeOwner);
@@ -79,9 +81,9 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
 
   std::stringstream ss;
 
-  QDir::setCurrent(getPathOfBinary());
   ss << CMD_LDD << " \"" << _fileName.toStdString() << "\"";
 
+  treeWidget.setUpdatesEnabled(false);
   execAndDoOnEveryLine(ss.str(), [this, &treeWidget](const QString &line) {
     QTreeWidgetItem *item = nullptr;
     QStringList sl;
@@ -92,7 +94,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       sl = line.split(DEPEND_SPLITTER);
     }
     int i = 0;
-    for (const QString &v : qAsConst(sl)) {
+    for (const QString &v : sl) {
       if (v.contains("(0x") || v.contains("(compatibility")) {
         QStringList slTmp = v.split("(");
         if (slTmp.size() > 1) {
@@ -121,11 +123,10 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       treeWidget.addTopLevelItem(item);
       sl.removeFirst();
       QTreeWidgetItem *tmp = item;
-      QColor redC("red");
-      for (const QString &v : qAsConst(sl)) {
+      for (const QString &v : sl) {
         if (!v.trimmed().isEmpty()) {
           if (v.contains("not found")) {
-            tmp->setForeground(0, QBrush(redC));
+            tmp->setForeground(0, QBrush(Qt::red));
             tmp->setText(0, tmp->text(0) + " " + v);
             tmp->setToolTip(0, tmp->text(0));
           } else {
@@ -138,8 +139,7 @@ void QLdd::fillDependency(QTreeWidget &treeWidget) {
       }
     }
   });
-
-  QDir::setCurrent(_lddDirPath);
+  treeWidget.setUpdatesEnabled(true);
 }
 
 void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
@@ -147,33 +147,44 @@ void QLdd::fillExportTable(QListWidget &listWidget, const QString &filter) {
   std::mutex mutex;
   std::stringstream ss;
   ss << NM << " \"" << _fileName.toStdString() << "\" | grep \\ T\\ ";
+
+  // Collect demangled results from worker threads; never touch the widget from them.
+  std::vector<std::pair<QString, QString>> results;
+
   execAndDoOnEveryLine(
       ss.str(),
-      [&mutex, &listWidget, &filter, this](const QString &line) {
-        int status = 0;
+      [&mutex, &results, &filter, this](const QString &line) {
         QStringList info = line.split(" ");
+        if (info.size() < 3) return;
+
+        int status = 0;
         QString demangled(info.at(2));
-        char *realname = abi::__cxa_demangle(info.at(2).toStdString().c_str(), nullptr, nullptr, &status);
+        char *realname = abi::__cxa_demangle(info.at(2).toUtf8().constData(), nullptr, nullptr, &status);
         if (realname) {
           demangled = QString::fromLocal8Bit(realname);
           ::free(realname);
-          for (auto &_demangleRule : _demangleRules) {
-            demangled.replace(_demangleRule.first, _demangleRule.second);
-            if (demangled.contains("string")) {
-              qDebug() << "from->" << _demangleRule.first << " to->" << _demangleRule.second;
-            }
+          for (const auto &rule : _demangleRules) {
+            demangled.replace(rule.first, rule.second);
           }
         }
-        std::unique_ptr<QListWidgetItem> item(new QListWidgetItem(info.at(0) + " " + demangled));
-        item->setToolTip(demangled);
-        std::unique_lock<std::mutex> lock(mutex);
-        if (!filter.isEmpty() && demangled.contains(filter, Qt::CaseInsensitive)) {
-          listWidget.addItem(item.release());
-        } else if (filter.isEmpty()) {
-          listWidget.addItem(item.release());
+
+        if (!filter.isEmpty() && !demangled.contains(filter, Qt::CaseInsensitive)) {
+          return;
         }
+
+        std::unique_lock<std::mutex> lock(mutex);
+        results.emplace_back(info.at(0), std::move(demangled));
       },
       Exec::ASYNC);
+
+  // All async work is done — populate the widget on the main thread.
+  listWidget.setUpdatesEnabled(false);
+  for (const auto &r : results) {
+    auto *item = new QListWidgetItem(r.first + " " + r.second);
+    item->setToolTip(r.second);
+    listWidget.addItem(item);
+  }
+  listWidget.setUpdatesEnabled(true);
 }
 
 QString QLdd::getPathOfBinary() { return _fileInfo.absolutePath(); }
@@ -188,12 +199,11 @@ QString QLdd::getInfo() {
   std::stringstream ss;
   ss << "file \"" << _fileName.toStdString() << "\"";
   QString buf;
-  execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) { buf.append(line + "\n"); });
-  QStringList slTmp = buf.split(INFO_SPLITTER);
-  buf.clear();
-  for (const QString &v : qAsConst(slTmp)) {
-    buf.append(v.trimmed()).append("\n");
-  }
+  execAndDoOnEveryLine(ss.str(), [&buf](const QString &line) {
+    for (const QString &part : line.split(INFO_SPLITTER)) {
+      buf.append(part.trimmed()).append("\n");
+    }
+  });
   return buf;
 }
 const QMOD &QLdd::getOwnerMod() const { return _ownerMod; }

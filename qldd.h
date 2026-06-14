@@ -65,7 +65,6 @@ class QLdd {
   QString _tmCreate;
   QString _tmAccess;
   QString _tmModify;
-  QString _lddDirPath;
   QString _fileSize;
   QMOD _ownerMod{};
   QMOD _groupMod{};
@@ -84,7 +83,7 @@ void execAndDoOnEveryLine(const std::string &execString, const Action &action, E
 
   QTextStream nmOutStream(cmdStream.get());
   QString line;
-  using returnType = typename std::result_of<Action(const QString &)>::type;
+  using returnType = std::invoke_result_t<Action, const QString &>;
   std::list<std::future<returnType>> retList;
   do {
     line = nmOutStream.readLine();

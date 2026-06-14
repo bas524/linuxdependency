@@ -8,18 +8,14 @@ jobs:
       matrix:
         include:
           - arch: aarch64
-            distro: ubuntu_latest
-          - arch: ppc64le
-            distro: ubuntu_latest
-          - arch: s390x
-            distro: ubuntu_latest
+            distro: ubuntu22.04
+#          - arch: ppc64le
+#            distro: ubuntu22.04
+#          - arch: s390x
+#            distro: ubuntu22.04
           - arch: riscv64
-            distro: ubuntu_latest
+            distro: ubuntu22.04
           - arch: aarch64
-            distro: fedora_latest
-          - arch: ppc64le
-            distro: fedora_latest
-          - arch: s390x
             distro: fedora_latest
     steps:
       - name: Get current date
@@ -31,7 +27,7 @@ jobs:
       - name: Set artifacts dir
         id: artifacts
         run: echo "artifacts=$(echo $PWD/artifacts)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: uraimo/run-on-arch-action@v2
         name: Run commands
         id: configure-and-build
@@ -50,16 +46,17 @@ jobs:
           install: |
             case "${{ matrix.distro }}" in
               ubuntu*|jessie|stretch|buster|bullseye)
-                apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
+                apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release libc6-dev libpthread-stubs0-dev
                 ;;
               fedora*)
-                yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build redhat-lsb
+                yum update -y && yum install -yq binutils nautilus-python qt5-qtbase-devel qt5-qttools rpm-build glibc-devel
                 ;;
             esac
           run: |
+            ulimit -s unlimited &&
             mkdir cmake-build-release &&
             cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H. &&
-            cmake --build cmake-build-release/ --target all &&
+            cmake --build cmake-build-release/ --target all -- -j1 &&
             [[ "$(lsb_release -i -s)" == "Ubuntu" ]] && export CPACK_FORMAT=DEB || export CPACK_FORMAT=RPM &&
             [[ "$(lsb_release -i -s)" == "Ubuntu" ]] && export PKG_FORMAT=deb   || export PKG_FORMAT=rpm &&
             cd cmake-build-release && cpack -G ${CPACK_FORMAT} && cd .. &&
@@ -70,7 +67,7 @@ jobs:
         id: get-version
         run: echo "prj_ver=$(cat ${PWD}/artifacts/VERSION.txt)" >> $GITHUB_OUTPUT
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}-{2}', steps.get-version.outputs.prj_ver, matrix.distro, matrix.arch) }}
           path: ${{ format('{0}/Qldd-{1}-{2}.???', steps.artifacts.outputs.artifacts ,steps.get-version.outputs.prj_ver, matrix.arch) }}
@@ -85,6 +82,8 @@ jobs:
       matrix:
         container:
           - ubuntu:22.04
+          - ubuntu:24.04
+          - ubuntu:26.04
 
     container:
       image: ${{ matrix.container }}
@@ -96,7 +95,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
         run: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
@@ -115,7 +114,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -123,61 +122,7 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
-          path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
-  ubuntu-20-04:
-    runs-on: ubuntu-latest
-    name: Build on ${{ matrix.container }} x86_64
-    strategy:
-      #
-      # matrix for containers
-      #
-      matrix:
-        container:
-          - ubuntu:20.04
-
-    container:
-      image: ${{ matrix.container }}
-
-    steps:
-      - name: Get current date
-        id: date
-        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-      - name: Get commit sha
-        id: git_sha
-        run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
-      # install dependencies
-      - name: devel-pkgs
-        run: |
-          echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections &&
-          apt-get update -y && apt-get install -yq python-nautilus binutils make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
-      # build project
-      - name: mkdir
-        run: mkdir cmake-build-release
-      - name: cmake cmake-build-release
-        run: cmake -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
-      - name: cmake make
-        run: cmake --build cmake-build-release/ --target all
-        env:
-          MAKEFLAGS: "-j2"
-      - name: get-version
-        id: get-version
-        run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
-      - name: cpack
-        run: cd cmake-build-release && cpack -G DEB && cd ..
-        # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
-        id: container
-        with:
-          source: ${{ matrix.container }}
-          find: ':'        # we want to remove : from container name
-          replace: '-'     # and replace it with -
-
-      - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
@@ -202,7 +147,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
         run: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
@@ -221,7 +166,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -229,11 +174,11 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
-  debian-buster:
+  debian-bookworm:
     runs-on: ubuntu-latest
     name: Build on ${{ matrix.container }} x86_64
     strategy:
@@ -242,7 +187,7 @@ jobs:
       #
       matrix:
         container:
-          - debian:buster
+          - debian:bookworm
 
     container:
       image: ${{ matrix.container }}
@@ -254,10 +199,10 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
-        run: apt-get update -y && apt-get install -yq binutils python-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
+        run: apt-get update -y && apt-get install -yq binutils python3-nautilus make cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gcc g++ lsb-release
       # build project
       - name: mkdir
         run: mkdir cmake-build-release
@@ -273,7 +218,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G DEB && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -281,7 +226,7 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
@@ -294,7 +239,7 @@ jobs:
       #
       matrix:
         container:
-          - centos:latest
+          - quay.io/centos/centos:stream9
 
     container:
       image: ${{ matrix.container }}
@@ -306,16 +251,15 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
         run: |
-          cd /etc/yum.repos.d/ &&
-          sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* &&
-          sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* &&
-          cd / &&
-          yum update -y && yum install -yq epel-next-release &&
-          yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build redhat-lsb-core
+          yum install -y dnf-plugins-core &&
+          yum config-manager --set-enabled crb &&
+          yum install -y epel-release epel-next-release &&
+          yum update -y &&
+          yum install -yq binutils nautilus-python qt5-qtbase-devel qt5-qttools rpm-build
       # build project
       - name: mkdir
         run: mkdir cmake-build-release
@@ -331,15 +275,12 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - name: Sanitize container name for artifact
         id: container
-        with:
-          source: ${{ matrix.container }}
-          find: ':'        # we want to remove : from container name
-          replace: '-'     # and replace it with -
+        run: echo "value=$(echo '${{ matrix.container }}' | tr ':/' '--')" >> $GITHUB_OUTPUT
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
@@ -364,10 +305,10 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: devel-pkgs
-        run: yum update -y && yum install -yq binutils python3-nautilus qt5-qtbase-devel qt5-qttools rpm-build redhat-lsb
+        run: yum update -y && yum install -yq binutils nautilus-python qt5-qtbase-devel qt5-qttools rpm-build
       # build project
       - name: mkdir
         run: mkdir cmake-build-release
@@ -383,7 +324,7 @@ jobs:
       - name: cpack
         run: cd cmake-build-release && cpack -G RPM && cd ..
         # upload artifact
-      - uses: mad9000/actions-find-and-replace-string@3
+      - uses: mad9000/actions-find-and-replace-string@5
         id: container
         with:
           source: ${{ matrix.container }}
@@ -391,13 +332,13 @@ jobs:
           replace: '-'     # and replace it with -
 
       - name: Upload Qldd binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}.{1}', steps.get-version.outputs.prj_ver, steps.container.outputs.value) }}
           path: cmake-build-release/${{ format('Qldd-{0}-x86_64.???', steps.get-version.outputs.prj_ver) }}
   macos-clang-cmake:
     runs-on: macos-latest
-    name: Build on macos-latest x86_64
+    name: Build on macos-latest
 
     steps:
       - name: Get current date
@@ -406,7 +347,7 @@ jobs:
       - name: Get commit sha
         id: git_sha
         run: echo "git_sha=$(echo $GITHUB_SHA)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install dependencies
       - name: brew-pkgs
         run: brew install qt@5
@@ -414,7 +355,7 @@ jobs:
       - name: mkdir
         run: mkdir cmake-build-release
       - name: cmake cmake-build-release
-        run: cmake -DCMAKE_PREFIX_PATH=$(brew --prefix)/opt/qt5 -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
+        run: cmake -DCMAKE_PREFIX_PATH=$(brew --prefix)/opt/qt@5 -DCOMMITTER_DATE="${{ steps.date.outputs.date }}" -DCOMMITTER_FULLSHA="${{ steps.git_sha.outputs.git_sha }}" -DCOMMITTER_SHORTSHA="$(echo ${{ steps.git_sha.outputs.git_sha }} | cut -c1-7)" -DCMAKE_BUILD_TYPE=Release -Bcmake-build-release -H.
       - name: cmake make
         run: cmake --build cmake-build-release/ --target all
         env:
@@ -424,7 +365,7 @@ jobs:
         run: echo "prj_ver=$(cat ./VERSION.txt)" >> $GITHUB_OUTPUT
       - name: cpack
         run: cd cmake-build-release && cpack -G DragNDrop && cd ..
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ format('Qldd-{0}-Darwin.dmg', steps.get-version.outputs.prj_ver) }}
           path: cmake-build-release/${{ format('Qldd-{0}-Darwin.dmg', steps.get-version.outputs.prj_ver) }}

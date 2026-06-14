@@ -2,8 +2,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/cmake/modules")
 cmake_minimum_required(VERSION 3.5)
 
 set(MAJOR "1")
-set(MINOR "2")
-set(PATCH "1")
+set(MINOR "3")
+set(PATCH "0")
 cmake_policy(SET CMP0048 NEW)
 
 project(Qldd
@@ -20,17 +20,45 @@ configure_file(${CMAKE_SOURCE_DIR}/resources/qldd.desktop.in ${CMAKE_BINARY_DIR}
 
 function(get_linux_lsb_release_information)
     find_program(LSB_RELEASE_EXEC lsb_release)
-    if(NOT LSB_RELEASE_EXEC)
-        message(FATAL_ERROR "Could not detect lsb_release executable, can not gather required information")
+    if(LSB_RELEASE_EXEC)
+        execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --id OUTPUT_VARIABLE LSB_RELEASE_ID_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
+        execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --release OUTPUT_VARIABLE LSB_RELEASE_VERSION_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
+        execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --codename OUTPUT_VARIABLE LSB_RELEASE_CODENAME_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
+        set(LSB_RELEASE_ID_SHORT "${LSB_RELEASE_ID_SHORT}" PARENT_SCOPE)
+        set(LSB_RELEASE_VERSION_SHORT "${LSB_RELEASE_VERSION_SHORT}" PARENT_SCOPE)
+        set(LSB_RELEASE_CODENAME_SHORT "${LSB_RELEASE_CODENAME_SHORT}" PARENT_SCOPE)
+    elseif(EXISTS "/etc/os-release")
+        # Fallback: parse /etc/os-release (present on all systemd-based distros)
+        set(_id "unknown")
+        set(_version "unknown")
+        set(_codename "unknown")
+        file(STRINGS "/etc/os-release" _os_release)
+        foreach(_line ${_os_release})
+            if(_line MATCHES "^ID=(.+)$")
+                set(_id "${CMAKE_MATCH_1}")
+                string(REPLACE "\"" "" _id "${_id}")
+                # Capitalize first letter to match lsb_release output (ubuntu -> Ubuntu)
+                string(SUBSTRING "${_id}" 0 1 _first)
+                string(TOUPPER "${_first}" _first)
+                string(SUBSTRING "${_id}" 1 -1 _rest)
+                set(_id "${_first}${_rest}")
+            elseif(_line MATCHES "^VERSION_ID=(.+)$")
+                set(_version "${CMAKE_MATCH_1}")
+                string(REPLACE "\"" "" _version "${_version}")
+            elseif(_line MATCHES "^VERSION_CODENAME=(.+)$")
+                set(_codename "${CMAKE_MATCH_1}")
+                string(REPLACE "\"" "" _codename "${_codename}")
+            endif()
+        endforeach()
+        set(LSB_RELEASE_ID_SHORT "${_id}" PARENT_SCOPE)
+        set(LSB_RELEASE_VERSION_SHORT "${_version}" PARENT_SCOPE)
+        set(LSB_RELEASE_CODENAME_SHORT "${_codename}" PARENT_SCOPE)
+    else()
+        message(WARNING "Neither lsb_release nor /etc/os-release found; distro info unavailable")
+        set(LSB_RELEASE_ID_SHORT "unknown" PARENT_SCOPE)
+        set(LSB_RELEASE_VERSION_SHORT "unknown" PARENT_SCOPE)
+        set(LSB_RELEASE_CODENAME_SHORT "unknown" PARENT_SCOPE)
     endif()
-
-    execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --id OUTPUT_VARIABLE LSB_RELEASE_ID_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
-    execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --release OUTPUT_VARIABLE LSB_RELEASE_VERSION_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
-    execute_process(COMMAND "${LSB_RELEASE_EXEC}" --short --codename OUTPUT_VARIABLE LSB_RELEASE_CODENAME_SHORT OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    set(LSB_RELEASE_ID_SHORT "${LSB_RELEASE_ID_SHORT}" PARENT_SCOPE)
-    set(LSB_RELEASE_VERSION_SHORT "${LSB_RELEASE_VERSION_SHORT}" PARENT_SCOPE)
-    set(LSB_RELEASE_CODENAME_SHORT "${LSB_RELEASE_CODENAME_SHORT}" PARENT_SCOPE)
 endfunction()
 
 message(STATUS "COMMITTER_FULLSHA ${COMMITTER_FULLSHA}")
@@ -51,22 +79,22 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Threads REQUIRED)
 
-set(QtVerPath qt5)
+set(QtVerPath qt@5)
 if (FORCE_QT6)
     set(QtVer Qt6)
-    set(QtVerPath qt6)
+    set(QtVerPath qt@6)
     find_package(${QtVer} COMPONENTS Widgets REQUIRED)
 else()
 set(QtVer Qt5)
     find_package(${QtVer} COMPONENTS Widgets QUIET)
     if (NOT Qt5_FOUND)
         set(QtVer Qt6)
-	      set(QtVerPath qt6)
+        set(QtVerPath qt@6)
         find_package(${QtVer} COMPONENTS Widgets REQUIRED)
     endif ()
 endif()
@@ -163,9 +191,18 @@ if(APPLE)
                      OUTPUT_VARIABLE brew_path)
 
     string(STRIP ${brew_path} brew_path)
+    link_directories("${brew_path}/lib")
+    add_custom_command(TARGET Qldd
+                       POST_BUILD
+                       COMMAND ln -sf "${brew_path}/lib" "lib")
     add_custom_command(TARGET Qldd
                        POST_BUILD
                        COMMAND "${brew_path}/opt/${QtVerPath}/bin/macdeployqt" Qldd.app)
+    # Re-sign the entire bundle after macdeployqt copies unsigned Homebrew dylibs into it.
+    # Without this macOS 15+ kills the process with CODESIGNING / Invalid Page on launch.
+    add_custom_command(TARGET Qldd
+                       POST_BUILD
+                       COMMAND codesign --force --deep --sign - Qldd.app)
 else()
 
     # Components:
@@ -184,9 +221,6 @@ else()
             DESTINATION share/nemo/actions
             COMPONENT nemo-integration)
     install(FILES ${CMAKE_SOURCE_DIR}/nautilus-python/extensions/dependency-viewer.py
-            DESTINATION share/nautilus-python/extensions
-            COMPONENT nautilus-integration)
-    install(FILES ${CMAKE_SOURCE_DIR}/nautilus-python/extensions/dependency-viewer-43.py
             DESTINATION share/nautilus-python/extensions
             COMPONENT nautilus-integration)
     install(FILES ${CMAKE_SOURCE_DIR}/dolphin/kde-qldd-menu.desktop

@@ -11,9 +11,9 @@ static T enum_cast(demanglerules::Fields field) {
   return static_cast<T>(field);
 };
 
-demanglerules::demanglerules(QWidget *parent) : QDialog(parent), ui(new Ui::demanglerules) {
+demanglerules::demanglerules(QWidget *parent) : QDialog(parent), ui(new Ui::demanglerules), _mainWindow(dynamic_cast<MainWindow *>(parent)) {
   ui->setupUi(this);
-  auto *m = dynamic_cast<MainWindow *>(parent);
+  auto *m = _mainWindow;
   ui->tableWidget->setColumnCount(enum_cast<int>(Fields::COUNT));
   const auto &rulesRef = m->demangleRules();
   QStringList tableHeader;
@@ -39,7 +39,7 @@ demanglerules::~demanglerules() { delete ui; }
 
 void demanglerules::insertNewRow(int row, const QString &src, const QString &dst) {
   ui->tableWidget->insertRow(row);
-  auto *m = dynamic_cast<MainWindow *>(parent());
+  auto *m = _mainWindow;
 
   auto *checkBoxWidget = new QWidget();
   auto *checkBox = new QCheckBox();
@@ -96,7 +96,7 @@ void demanglerules::on_pBRemoveRule_clicked() {
 }
 
 void demanglerules::on_buttonBox_accepted() {
-  auto *m = dynamic_cast<MainWindow *>(parent());
+  auto *m = _mainWindow;
   RulesMap rules;
   for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
     auto *itemSrc = ui->tableWidget->item(i, enum_cast<int>(Fields::Source));
