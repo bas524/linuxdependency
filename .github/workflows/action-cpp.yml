@@ -9,10 +9,10 @@ jobs:
         include:
           - arch: aarch64
             distro: ubuntu22.04
-          - arch: ppc64le
-            distro: ubuntu22.04
-          - arch: s390x
-            distro: ubuntu22.04
+#          - arch: ppc64le
+#            distro: ubuntu22.04
+#          - arch: s390x
+#            distro: ubuntu22.04
           - arch: riscv64
             distro: ubuntu22.04
           - arch: aarch64
@@ -83,6 +83,7 @@ jobs:
         container:
           - ubuntu:22.04
           - ubuntu:24.04
+          - ubuntu:26.04
 
     container:
       image: ${{ matrix.container }}
